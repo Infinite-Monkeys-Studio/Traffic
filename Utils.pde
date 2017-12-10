@@ -9,18 +9,29 @@ static class Utils {
   
   // add the car to the list in a sorted way.
   // the car with the biggest alpha is the 0th car
-  static void insertByOrder(Car c, ArrayList<Car> l) {
-    if(l.size() == 0) {l.add(c); return;} // put the first item if list is empty
-    for(int i = 0; i < l.size(); i++) {
-      if(c.alpha > l.get(i).alpha) {
-        l.add(i, c);
+  static void insertByOrder(Car c, ArrayList<Car> list) {
+    if(list.size() == 0) {list.add(c); return;} // put the first item if list is empty
+    for(int i = 0; i < list.size(); i++) {
+      if(c.alpha > list.get(i).alpha) {
+        list.add(i, c);
         return;
       }
     }
-    l.add(c);
+    list.add(c);
   }
   
   static void removeCar(Segment s, Car c) {
     s.cars.remove(c);
+  }
+  
+  static boolean isVectorNear(PVector v1, PVector v2, float dist) {
+    return v1.dist(v2) < dist;
+  }
+  
+  static void deleteCar(Car c) {
+    //remove from segment
+    removeCar(c.s, c);
+    //remove from global
+    c.deleted = true;
   }
 }

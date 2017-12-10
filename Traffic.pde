@@ -1,6 +1,11 @@
 ArrayList<Car> globalCars;
 ArrayList<Segment> globalSegments;
 
+boolean paused = false;
+boolean editMode = false;
+
+Segment newSegment;
+
 void setup() {
   size(800, 800);
   globalSegments = new ArrayList<Segment>();
@@ -12,13 +17,82 @@ void setup() {
 
 void draw() {
   background(#1D8309);
-  for(Car c : globalCars) {
-    c.draw();
+  if(editMode) {
+    for(Car c : globalCars) {
+      c.draw();
+    }
+    
+    for(Segment s : globalSegments) {
+      s.draw();
+      s.drawEditMode();
+    }
+    
+    if(newSegment != null) {
+      line(newSegment.start.x, newSegment.start.y, mouseX, mouseY);
+    }
+  } else {
+    for(Segment s : globalSegments) {
+      s.draw();
+      if(!paused) s.step();
+    }
+    
+    for(Car c : globalCars) {
+      if(c.deleted) globalCars.remove(c);
+      c.draw();
+    }
   }
   
-  for(Segment s : globalSegments) {
-    s.draw();
-    s.step();
+}
+
+void keyTyped() {
+  char k = key;
+  switch(k) {
+    case 'p':
+      paused = !paused;
+      break;
+    case 'e':
+      if(newSegment != null) break;
+      editMode = !editMode;
+      paused = editMode;
+      break;
+  }
+}
+
+void mousePressed() {
+  if(editMode) {
+    //check for segment node
+    newSegment = new Segment(mouseVector(), mouseVector());
+    for(Segment s : globalSegments) {
+      if(Utils.isVectorNear(newSegment.start, s.start, 5)) {
+        newSegment.start = s.start;
+      } else if(Utils.isVectorNear(newSegment.start, s.end, 5)) {
+        newSegment.start = s.end;
+        s.link(newSegment);
+      }
+    }
+    //check for car
+  }
+  
+}
+
+
+
+void mouseReleased() {
+  if(editMode) {
+    if(newSegment != null) {
+      newSegment.end = mouseVector();
+      globalSegments.add(newSegment);
+      for(Segment s : globalSegments) {
+        if(Utils.isVectorNear(newSegment.end, s.start, 5)) {
+          newSegment.end = s.start;
+          newSegment.link(s);
+        }else if(Utils.isVectorNear(newSegment.end, s.end, 5)) {
+          newSegment.end = s.end;
+        }
+      }
+      
+      newSegment = null;
+    }
   }
 }
 
@@ -54,4 +128,8 @@ void createTestSegments() {
   s2.link(s3);
   s3.link(s4);
   s4.link(s1);
+}
+
+PVector mouseVector() {
+  return new PVector(mouseX, mouseY);
 }

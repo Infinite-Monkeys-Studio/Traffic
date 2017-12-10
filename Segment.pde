@@ -23,6 +23,21 @@ class Segment {
     popMatrix();
   }
   
+  void drawEditMode() {
+    pushMatrix();
+    fill(255, 0, 0);
+    translate(start.x, start.y);
+    ellipse(0, 0, 10, 10);
+    ellipse(end.x-start.x, end.y-start.y, 10, 10);
+
+    PVector h = PVector.sub(end, start).div(2);
+    translate(h.x, h.y);
+    rotate(PVector.sub(end, start).heading());
+    line(0, 0, -10, 5);
+    line(0, 0, -10, -5);
+    popMatrix();
+  }
+  
   void step() {
     Car previousCar = null;
     

@@ -1,9 +1,9 @@
 class Segment {
   ArrayList<Car> cars;
-  ArrayList<Segment> segments;
+  ArrayList<Segment> segments; //list of roads a car can goto from this one. not sorted
   PVector start;
   PVector end;
-  float length;
+  float length; // must be recalculated anytime the start or end change
   
   Segment(PVector start, PVector end) {
     this.start = start;
@@ -29,19 +29,19 @@ class Segment {
     ellipse(end.x-start.x, end.y-start.y, 10, 10);
 
     PVector h = PVector.sub(end, start).div(2);
-    translate(h.x, h.y);
+    translate(h.x, h.y); // goto middle of line to put cheveron
     rotate(PVector.sub(end, start).heading());
     line(0, 0, -10, 5);
     line(0, 0, -10, -5);
     popMatrix();
   }
   
-  void refresh() {
+  void refresh() {// recalculate length of line
     this.length = PVector.dist(start, end);
   }
   
   void step() {
-    Car previousCar = null;
+    Car previousCar = null; //passed to car so they don't have to search
     
     for(int i = 0; i < cars.size(); i++) {
       Car c = cars.get(i);
@@ -51,7 +51,7 @@ class Segment {
     }
   }
   
-  void link(Segment s) {
+  void link(Segment s) { //add s to the list of segments that a car can goto after this one
     segments.add(s);
   }
 }

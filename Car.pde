@@ -1,9 +1,9 @@
 class Car {
   color c;
   Segment s;
-  float alpha;
-  float goalRate;
-  float rate;
+  float alpha; // percent of distance along segment
+  float goalRate; // rates are in px/s
+  float rate; 
   
   Car() {
     c = color(random(0,255), random(0,255), random(0,255));
@@ -52,18 +52,18 @@ class Car {
   }
   
   void findNewRoads() {
-    int cou = s.segments.size(); //<>//
-    if(cou == 0) {
-      alpha = 0;
+    int count = s.segments.size(); //<>//
+    if(count == 0) { // no new roads to go too. 
+      alpha = 0; // TODO delete car instead of looping them on the same road
       return;
     }
-    int ch = floor(random(0,cou));
-    Segment co = s.segments.get(ch);
+    int i = floor(random(0,count));
+    Segment newSegment = s.segments.get(i);
     alpha = 0; //must set alpha before sorting
-    Utils.addCar(co, this);
+    Utils.addCar(newSegment, this);
   }
   
-  Car copy() {
+  Car copy() { // by value copy
     return new Car(c,s,alpha,goalRate,rate);
   }
 }

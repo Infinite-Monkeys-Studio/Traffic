@@ -23,8 +23,8 @@ void setup() {
 void draw() {
   background(#1D8309);
   translate(viewPortVec.x, viewPortVec.y);
-  keys();
-  if(editMode) {
+  keys();//runs keys that are held down
+  if(editMode) { //edit mode pauses and draws in a different mode
     for(Car c : globalCars) {
       c.draw();
     }
@@ -38,7 +38,7 @@ void draw() {
       PVector end = mouseVector();
       line(newSegment.start.x, newSegment.start.y, end.x, end.y);
     }
-  } else {
+  } else { //run mode just simulates.
     for(Segment s : globalSegments) {
       s.draw();
       if(!paused) s.step();
@@ -57,13 +57,13 @@ void keyTyped() {
     case 'p':
       paused = !paused;
       break;
-    case 'e':
-      if(newSegment != null) break;
+    case 'e': //enter edit mode
+      if(newSegment != null) break; // don't let them leave edit mode if they are making a new road.
       editMode = !editMode;
       paused = editMode;
       break;
-    case 'g':
-      float dist = 999999999;
+    case 'g': // find the nearest start of a road and make a car on it.
+      float dist = 999999999; // just a big number
       Car newCar = new Car();
       globalCars.add(newCar);
       for(Segment s : globalSegments) {
@@ -75,14 +75,11 @@ void keyTyped() {
       }
       Utils.addCar(newCar.s, newCar);
       break;
-      
   }
 }
 
 void keyPressed() {
   keyList[keyCode&255] = true;
-
-  println(keyCode);
 }
 
 void keyReleased() {
@@ -91,10 +88,10 @@ void keyReleased() {
 
 void keys() {
   int s = 10;
-  if(keyList[65] || keyList[97]) viewPortVec.x += s;
-  if(keyList[100] || keyList[68]) viewPortVec.x -= s;
-  if(keyList[87] || keyList[119]) viewPortVec.y += s;
-  if(keyList[83] || keyList[115]) viewPortVec.y -= s;
+  if(keyList[65] || keyList[97]) viewPortVec.x += s; //a or A
+  if(keyList[100] || keyList[68]) viewPortVec.x -= s; //d or D
+  if(keyList[87] || keyList[119]) viewPortVec.y += s; //w or W
+  if(keyList[83] || keyList[115]) viewPortVec.y -= s; //s or S
 }
 
 void mousePressed() {
@@ -102,34 +99,32 @@ void mousePressed() {
     //check for segment node
     newSegment = new Segment(mouseVector(), mouseVector());
     for(Segment s : globalSegments) {
-      if(Utils.isVectorNear(newSegment.start, s.start, 5)) {
+      if(Utils.isVectorNear(newSegment.start, s.start, 5)) { //find a segment start to snap too
         newSegment.start = s.start;
       } else if(Utils.isVectorNear(newSegment.start, s.end, 5)) {
         newSegment.start = s.end;
         s.link(newSegment);
       }
     }
-    //check for car
   }
-  
 }
 
 
 
 void mouseReleased() {
   if(editMode) {
-    if(newSegment != null) {
+    if(newSegment != null) { //make sure we are making a segment
       newSegment.end = mouseVector();
       globalSegments.add(newSegment);
       for(Segment s : globalSegments) {
-        if(Utils.isVectorNear(newSegment.end, s.start, 5)) {
+        if(Utils.isVectorNear(newSegment.end, s.start, 5)) {// snap to nearby segments
           newSegment.end = s.start;
           newSegment.link(s);
         }else if(Utils.isVectorNear(newSegment.end, s.end, 5)) {
           newSegment.end = s.end;
         }
       }
-      newSegment.refresh();
+      newSegment.refresh(); // have to refresh to calculate new length
       newSegment = null;
     }
   }
@@ -169,6 +164,7 @@ void createTestSegments() {
   s4.link(s1);
 }
 
+// corrects for screen pan
 PVector mouseVector() {
   return PVector.sub(new PVector(mouseX, mouseY), viewPortVec);
 }

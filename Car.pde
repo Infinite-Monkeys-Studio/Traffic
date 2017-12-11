@@ -4,7 +4,6 @@ class Car {
   float alpha;
   float goalRate;
   float rate;
-  boolean deleted;
   
   Car() {
     c = color(random(0,255), random(0,255), random(0,255));
@@ -42,13 +41,8 @@ class Car {
     float aheadPos;
     float dist;
     
-    if(carAhead.alpha > 1) {
-      aheadPos = carAhead.s.length * (carAhead.alpha - 1);
-      dist = (s.length - (alpha * s.length)) + aheadPos;
-    } else {
-      aheadPos = s.length * carAhead.alpha;
-      dist = aheadPos - myPos;
-    }
+    aheadPos = s.length * carAhead.alpha;
+    dist = aheadPos - myPos;
     
     if(rate < 0) {rate = 0; return;} // if reversing stop.
     if(dist > 70) {rate = goalRate; return;} //if safe, drive fast
@@ -59,7 +53,10 @@ class Car {
   
   void findNewRoads() {
     int cou = s.segments.size(); //<>//
-    if(cou == 0) {Utils.deleteCar(this); return;}
+    if(cou == 0) {
+      alpha = 0;
+      return;
+    }
     int ch = floor(random(0,cou));
     Segment co = s.segments.get(ch);
     alpha = 0; //must set alpha before sorting

@@ -29,9 +29,6 @@ static class Utils {
   }
   
   static void deleteCar(Car c) {
-    //remove from segment
     removeCar(c.s, c);
-    //remove from global
-    c.deleted = true;
   }
 }

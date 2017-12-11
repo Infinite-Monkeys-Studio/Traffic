@@ -5,8 +5,6 @@ class Segment {
   PVector end;
   float length;
   
-  boolean isArc;
-  
   Segment(PVector start, PVector end) {
     this.start = start;
     this.end = end;
@@ -38,16 +36,12 @@ class Segment {
     popMatrix();
   }
   
+  void refresh() {
+    this.length = PVector.dist(start, end);
+  }
+  
   void step() {
     Car previousCar = null;
-    
-    if(segments.size() == 1) {
-      Segment nextSeg = segments.get(0);
-      if(nextSeg.cars.size() > 0) {
-        previousCar = nextSeg.cars.get(0).copy();
-        previousCar.alpha += 1;
-      }
-    }
     
     for(int i = 0; i < cars.size(); i++) {
       Car c = cars.get(i);

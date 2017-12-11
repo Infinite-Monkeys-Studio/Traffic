@@ -37,7 +37,6 @@ void draw() {
     }
     
     for(Car c : globalCars) {
-      if(c.deleted) globalCars.remove(c);
       c.draw();
     }
   }
@@ -90,7 +89,7 @@ void mouseReleased() {
           newSegment.end = s.end;
         }
       }
-      
+      newSegment.refresh();
       newSegment = null;
     }
   }

@@ -2,8 +2,8 @@ import java.util.Collections;
 
 static class Utils {
   static void addCar(Segment s, Car c) {
-    insertByOrder(c, s.cars);
     if(c.s != null) removeCar(c.s, c);
+    insertByOrder(c, s.cars);
     c.s = s;
   }
   

@@ -54,6 +54,19 @@ void keyTyped() {
       editMode = !editMode;
       paused = editMode;
       break;
+    case 'g':
+      float dist = 999999999;
+      Car newCar = new Car();
+      globalCars.add(newCar);
+      for(Segment s : globalSegments) {
+        float td = s.start.dist(mouseVector());
+        if(td < dist){
+          dist = td;
+          newCar.s = s;
+        }
+      }
+      Utils.addCar(newCar.s, newCar);
+      break;
   }
 }
 
@@ -97,7 +110,7 @@ void mouseReleased() {
 
 void createTestCars() {
   Car test = new Car();
-  test.goalRate = .007;
+  test.goalRate = 1.5;
   globalCars.add(test);
   Utils.addCar(globalSegments.get(1), test);
   

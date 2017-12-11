@@ -7,7 +7,7 @@ class Car {
   
   Car() {
     c = color(random(0,255), random(0,255), random(0,255));
-    goalRate = .01;
+    goalRate = 2;
     rate = goalRate;
     alpha = 0;
   }
@@ -34,7 +34,7 @@ class Car {
   }
   
   void step(Car carAhead) {
-    alpha += rate; //advance
+    alpha += rate / s.length; //advance
     if(alpha>=1) {findNewRoads(); return;} // if I over shot, find a new road
     if(carAhead == null) {rate = goalRate; return;} // no one ahead of me, drive fast
     float myPos = s.length * alpha;
@@ -46,7 +46,7 @@ class Car {
     
     if(rate < 0) {rate = 0; return;} // if reversing stop.
     if(dist > 70) {rate = goalRate; return;} //if safe, drive fast
-    if(dist < 50 && rate > 0) {rate -= .001; return;} // if close slow down //<>//
+    if(dist < 50 && rate > 0) {rate -= .1; return;} // if close slow down //<>//
     if(dist < 40) {rate = 0; return;} // if too close stop
     rate = carAhead.rate; // else follow
   }

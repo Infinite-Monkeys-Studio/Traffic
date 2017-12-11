@@ -1,3 +1,7 @@
+PVector viewPortVec;
+boolean[] keyList = new boolean[255];
+
+
 ArrayList<Car> globalCars;
 ArrayList<Segment> globalSegments;
 
@@ -8,6 +12,7 @@ Segment newSegment;
 
 void setup() {
   size(800, 800);
+  viewPortVec = new PVector(0, 0);
   globalSegments = new ArrayList<Segment>();
   globalCars = new ArrayList<Car>();
   createTestSegments();
@@ -17,6 +22,8 @@ void setup() {
 
 void draw() {
   background(#1D8309);
+  translate(viewPortVec.x, viewPortVec.y);
+  keys();
   if(editMode) {
     for(Car c : globalCars) {
       c.draw();
@@ -28,7 +35,8 @@ void draw() {
     }
     
     if(newSegment != null) {
-      line(newSegment.start.x, newSegment.start.y, mouseX, mouseY);
+      PVector end = mouseVector();
+      line(newSegment.start.x, newSegment.start.y, end.x, end.y);
     }
   } else {
     for(Segment s : globalSegments) {
@@ -67,7 +75,26 @@ void keyTyped() {
       }
       Utils.addCar(newCar.s, newCar);
       break;
+      
   }
+}
+
+void keyPressed() {
+  keyList[keyCode&255] = true;
+
+  println(keyCode);
+}
+
+void keyReleased() {
+  keyList[keyCode&255] = false;
+}
+
+void keys() {
+  int s = 10;
+  if(keyList[65] || keyList[97]) viewPortVec.x += s;
+  if(keyList[100] || keyList[68]) viewPortVec.x -= s;
+  if(keyList[87] || keyList[119]) viewPortVec.y += s;
+  if(keyList[83] || keyList[115]) viewPortVec.y -= s;
 }
 
 void mousePressed() {
@@ -143,5 +170,5 @@ void createTestSegments() {
 }
 
 PVector mouseVector() {
-  return new PVector(mouseX, mouseY);
+  return PVector.sub(new PVector(mouseX, mouseY), viewPortVec);
 }

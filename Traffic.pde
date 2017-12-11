@@ -132,7 +132,7 @@ void mouseReleased() {
 
 void createTestCars() {
   Car test = new Car();
-  test.goalRate = 1.5;
+  test.driver.goalRate = 1.5;
   globalCars.add(test);
   Utils.addCar(globalSegments.get(1), test);
   

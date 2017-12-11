@@ -2,22 +2,30 @@ class Car {
   color c;
   Segment s;
   float alpha; // percent of distance along segment
-  float goalRate; // rates are in px/s
-  float rate; 
+  float rate;
+  Driver driver;
   
   Car() {
     c = color(random(0,255), random(0,255), random(0,255));
-    goalRate = 2;
-    rate = goalRate;
+    rate = 0;
     alpha = 0;
+    driver = new Driver();
   }
   
   Car(color c, Segment s, float alpha, float goalRate, float rate) {
     this.c = c;
     this.s = s;
     this.alpha = alpha;
-    this.goalRate = goalRate;
     this.rate = rate;
+    this.driver = new Driver(goalRate);
+  }
+  
+  Car(color c, Segment s, float alpha, float rate, Driver driver) {
+    this.c = c;
+    this.s = s;
+    this.alpha = alpha;
+    this.rate = rate;
+    this.driver = driver;
   }
  
   void draw() {
@@ -35,20 +43,21 @@ class Car {
   
   void step(Car carAhead) {
     alpha += rate / s.length; //advance
-    if(alpha>=1) {findNewRoads(); return;} // if I over shot, find a new road
-    if(carAhead == null) {rate = goalRate; return;} // no one ahead of me, drive fast
-    float myPos = s.length * alpha;
-    float aheadPos;
     float dist;
+    float speed;
     
-    aheadPos = s.length * carAhead.alpha;
-    dist = aheadPos - myPos;
+    if(alpha>=1) {findNewRoads(); return;} // if I over shot, find a new road
+    if(carAhead  == null) {
+      dist = s.length - (s.length * alpha);
+      speed = -1;
+    } else {     
+      float aheadPos = s.length * carAhead.alpha;
+      float myPos = s.length * alpha;
+      dist = aheadPos - myPos;
+      speed = carAhead.rate;
+    }
     
-    if(rate < 0) {rate = 0; return;} // if reversing stop.
-    if(dist > 70) {rate = goalRate; return;} //if safe, drive fast
-    if(dist < 50 && rate > 0) {rate -= .1; return;} // if close slow down //<>//
-    if(dist < 40) {rate = 0; return;} // if too close stop
-    rate = carAhead.rate; // else follow
+    rate = driver.step(dist, speed);
   }
   
   void findNewRoads() {
@@ -64,6 +73,6 @@ class Car {
   }
   
   Car copy() { // by value copy
-    return new Car(c,s,alpha,goalRate,rate);
+    return new Car(c,s,alpha,rate,driver.copy());
   }
 }

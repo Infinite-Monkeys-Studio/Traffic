@@ -8,9 +8,11 @@ Use WASD to move the camera.
 
 ## Todo list:  
  - [ ] Add intersection control  
- - [ ] Make cars slow down for intersections  
+ - [X] Make cars slow down for intersections  
+   - [ ] Make cars respect intersections
  - [ ] Allow cars to change lanes  
- - [ ] Add driver concept  
+ - [X] Add driver concept  
+   - [ ] Add types of drivers (impulsive, careful, etc.)
  - [ ] Make a way to add cars en masse  
  - [ ] Make cars drive from a start to a finish  
 ---

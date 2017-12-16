@@ -7,6 +7,7 @@ ArrayList<Segment> globalSegments;
 
 boolean paused = false;
 boolean editMode = false;
+boolean helpMode = false;
 
 Segment newSegment;
 
@@ -22,6 +23,7 @@ void setup() {
 
 void draw() {
   background(#1D8309);
+  drawHelp();
   translate(viewPortVec.x, viewPortVec.y);
   keys();//runs keys that are held down
   if(editMode) { //edit mode pauses and draws in a different mode
@@ -75,6 +77,33 @@ void keyTyped() {
       }
       Utils.addCar(newCar.s, newCar);
       break;
+    case '/': case '?':
+      helpMode = !helpMode; break;
+  }
+}
+
+void drawHelp() {
+  String[] list = {"Amazing Traffic Simulator", 
+    "by Infinity Monkeys Studio",
+    "KEYS",
+    "wasd - pan the world",
+    "zx - zoom the world",
+    "e - edit mode",
+    "g - add car at mouse location",
+    "r - remove car",
+    "? - show help",    
+  };
+  int ts = (int)(height / 50);
+  textSize(ts);
+  fill(200);
+  if (!helpMode) {
+    text("Press ? for Help",ts,height-ts);
+    return;
+  }
+  int x = ts*10;
+  int y = ts*5;
+  for (String s : list) {
+    text(s,x,y+=ts);
   }
 }
 

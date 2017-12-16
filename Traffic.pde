@@ -1,5 +1,6 @@
 PVector viewPortVec;
-boolean[] keyList = new boolean[255];
+float viewZoom;
+boolean[] keyList = new boolean[256];
 
 
 ArrayList<Car> globalCars;
@@ -13,8 +14,9 @@ Segment newSegment;
 
 void setup() {
   size(800, 800);
-  frame.setResizable(true);
+  surface.setResizable(true);
   viewPortVec = new PVector(0, 0);
+  viewZoom = 1;
   globalSegments = new ArrayList<Segment>();
   globalCars = new ArrayList<Car>();
   createTestSegments();
@@ -25,6 +27,8 @@ void setup() {
 void draw() {
   background(#1D8309);
   drawHelp();
+  translate(width/2, height/2);  // this is so the zoom is at the center
+  scale(viewZoom);
   translate(viewPortVec.x, viewPortVec.y);
   keys();//runs keys that are held down
   if(editMode) { //edit mode pauses and draws in a different mode
@@ -56,6 +60,7 @@ void draw() {
 
 void keyTyped() {
   char k = key;
+  PVector mv = mouseVector();
   switch(k) {
     case 'p':
       paused = !paused;
@@ -66,17 +71,24 @@ void keyTyped() {
       paused = editMode;
       break;
     case 'g': // find the nearest start of a road and make a car on it.
-      float dist = 999999999; // just a big number
+      Segment s = nearestSegment(mv);
+      if (s == null) break;
       Car newCar = new Car();
       globalCars.add(newCar);
-      for(Segment s : globalSegments) {
-        float td = s.start.dist(mouseVector());
-        if(td < dist){
-          dist = td;
-          newCar.s = s;
-        }
-      }
-      Utils.addCar(newCar.s, newCar);
+      Utils.addCar(s, newCar);
+      newCar.alpha = s.nearestAlpha(mv);
+      break;
+    case 'r':
+      Car c = nearestCar(mv);
+      if (c == null) break;
+      globalCars.remove(c);
+      c.s.cars.remove(c);
+      break;
+    case 't':
+      Segment s1 = nearestSegment(mv);
+      if (s1 == null) break;
+      for (Car c1:s1.cars) globalCars.remove(c1);
+      globalSegments.remove(s1);
       break;
     case '/': case '?':
       helpMode = !helpMode; break;
@@ -84,7 +96,8 @@ void keyTyped() {
 }
 
 void drawHelp() {
-  String[] list = {"Amazing Traffic Simulator", 
+  String[] list = {
+    "Traffic Simulator", 
     "by Infinite Monkeys Studio","",
     "---- KEYS ----",
     "wasd - pan the world",
@@ -93,16 +106,17 @@ void drawHelp() {
     "p - pause simulation",
     "g - add car at mouse location",
     "r - remove car",
+    "t - remove road segment",
     "? - show help",
     "Esc - exit",
-    "============", 
+    "", 
     "In edit mode, click and drag to create a road."
   };
   int ts = (int)(height / 50);
   textSize(ts);
   fill(200);
   if (!helpMode) {
-    text("Press ? for Help",ts,height-ts);
+    text("? for Help",ts/2,height-ts/3);
     return;
   }
   int x = ts*10;
@@ -113,6 +127,7 @@ void drawHelp() {
 }
 
 void keyPressed() {
+  //println(keyCode);
   keyList[keyCode&255] = true;
 }
 
@@ -126,6 +141,8 @@ void keys() {
   if(keyList[100] || keyList[68]) viewPortVec.x -= s; //d or D
   if(keyList[87] || keyList[119]) viewPortVec.y += s; //w or W
   if(keyList[83] || keyList[115]) viewPortVec.y -= s; //s or S
+  if(keyList[88]) viewZoom *= 1.02; //x 
+  if(keyList[90]) viewZoom /= 1.02; //z 
 }
 
 void mousePressed() {
@@ -174,22 +191,19 @@ void createTestCars() {
   for(int i = 0; i < 4; i++) {
     Car c = new Car();
     c.alpha = ((i*55)/l);
-    globalCars.add(c);
-    
-    Utils.addCar(globalSegments.get(0), c);
-    
-   
+    globalCars.add(c);    
+    Utils.addCar(globalSegments.get(0), c);   
   } 
 }
 
 void createTestSegments() {
-  Segment s1 = new Segment(new PVector(100,100), new PVector(400,100));
+  Segment s1 = new Segment(new PVector(-200,-200), new PVector(-200,200));
   globalSegments.add(s1);
-  Segment s2 = new Segment(new PVector(400,100), new PVector(400,400));
+  Segment s2 = new Segment(new PVector(-200,200), new PVector(200,200));
   globalSegments.add(s2);
-  Segment s3 = new Segment(new PVector(400,400), new PVector(100,400));
+  Segment s3 = new Segment(new PVector(200,200), new PVector(200,-200));
   globalSegments.add(s3);
-  Segment s4 = new Segment(new PVector(100,400), new PVector(100,100));
+  Segment s4 = new Segment(new PVector(200,-200), new PVector(-200,-200));
   globalSegments.add(s4);
   
   s1.link(s2);
@@ -198,7 +212,33 @@ void createTestSegments() {
   s4.link(s1);
 }
 
-// corrects for screen pan
+// corrects for screen pan and zoom
 PVector mouseVector() {
-  return PVector.sub(new PVector(mouseX, mouseY), viewPortVec);
+  return PVector.sub(new PVector(mouseX - width/2, mouseY - height/2).mult(1 / viewZoom), viewPortVec);
+}
+
+Car nearestCar(PVector p) {
+  float dist = 1e9;
+  Car car = null;
+  for(Car c : globalCars) {
+    float td = c.location().dist(p);
+    if (car == null || td < dist){
+      dist = td;
+      car = c;
+    }
+  }
+  return car;
+}
+
+Segment nearestSegment(PVector p) {
+  float dist = 1e9;
+  Segment seg = null;
+  for(Segment s : globalSegments) {
+    float td = s.distanceToPoint(p);
+    if(seg == null || td < dist){
+      dist = td;
+      seg = s;
+    }
+  }
+  return seg;
 }

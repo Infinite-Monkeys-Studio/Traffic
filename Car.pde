@@ -31,7 +31,7 @@ class Car {
   void draw() {
     pushMatrix();
     fill(c);
-    PVector p = PVector.lerp(s.start, s.end, alpha);
+    PVector p = location();
     float heading = PVector.sub(s.end, s.start).heading();
     translate(p.x, p.y);
     rotate(heading);
@@ -39,6 +39,10 @@ class Car {
     rect(-10, -5, 20, 10);
     
     popMatrix();
+  }
+  
+  PVector location() {
+    return PVector.lerp(s.start, s.end, alpha);
   }
   
   void step(Car carAhead) {

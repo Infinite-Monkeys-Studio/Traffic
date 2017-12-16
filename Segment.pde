@@ -54,4 +54,17 @@ class Segment {
   void link(Segment s) { //add s to the list of segments that a car can goto after this one
     segments.add(s);
   }
+  
+  float nearestAlpha(PVector point) { 
+    // returns the alpha 0..1 that is nearest to the point (such as mouse x y)
+    if (length < 1e-5) return 0;
+    PVector axis = PVector.sub(end, start);
+    return Math.min(1, Math.max(0, axis.dot(PVector.sub(point, start)) / axis.dot(axis)));
+  }
+  
+  float distanceToPoint(PVector point) {
+    float a = nearestAlpha(point);
+    PVector axis = PVector.sub(end, start);
+    return point.dist(PVector.add(start, axis.mult(a)));
+  }
 }

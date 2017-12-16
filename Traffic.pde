@@ -13,6 +13,7 @@ Segment newSegment;
 
 void setup() {
   size(800, 800);
+  frame.setResizable(true);
   viewPortVec = new PVector(0, 0);
   globalSegments = new ArrayList<Segment>();
   globalCars = new ArrayList<Car>();
@@ -84,14 +85,18 @@ void keyTyped() {
 
 void drawHelp() {
   String[] list = {"Amazing Traffic Simulator", 
-    "by Infinity Monkeys Studio",
-    "KEYS",
+    "by Infinite Monkeys Studio","",
+    "---- KEYS ----",
     "wasd - pan the world",
     "zx - zoom the world",
     "e - edit mode",
+    "p - pause simulation",
     "g - add car at mouse location",
     "r - remove car",
-    "? - show help",    
+    "? - show help",
+    "Esc - exit",
+    "============", 
+    "In edit mode, click and drag to create a road."
   };
   int ts = (int)(height / 50);
   textSize(ts);

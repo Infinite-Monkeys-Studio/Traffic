@@ -4,6 +4,8 @@ class Segment {
   PVector start;
   PVector end;
   float length; // must be recalculated anytime the start or end change
+  Segment leftside;   // cars can change lanes into left or right side (might be null)
+  Segment rightside;  // these must be parallel segments in the same direction and distance
   
   Segment(PVector start, PVector end) {
     this.start = start;
@@ -13,15 +15,33 @@ class Segment {
     cars = new ArrayList<Car>();
     segments = new ArrayList<Segment>();
   }
-  
+
+  PVector rightDir() {  // return a direction to the RIGHT of cars on this segment
+    return new PVector(start.y - end.y, end.x - start.x).normalize();
+  }
+
   void draw() {
-    pushMatrix();
-    translate(start.x, start.y);
-    line(0,0, end.x-start.x, end.y-start.y);
-    popMatrix();
+    // Draw a fat gray line for the road
+    strokeWeight(11);
+    strokeCap(ROUND);
+    stroke(100);
+    line(start.x,start.y, end.x, end.y);
+    
+    // Draw white lines on the sides of the road.
+    strokeWeight(.5);
+    strokeCap(SQUARE);
+    stroke(255);
+    PVector r = rightDir().mult(5);
+    if (leftside==null)  line(start.x-r.x,start.y-r.y,end.x-r.x,end.y-r.y);
+    if (rightside!=null) stroke(180);
+    line(start.x+r.x,start.y+r.y,end.x+r.x,end.y+r.y);
   }
   
   void drawEditMode() {
+    strokeWeight(1);
+    strokeCap(SQUARE);
+    stroke(0);
+    line(start.x,start.y, end.x, end.y);
     pushMatrix();
     fill(255, 0, 0);
     translate(start.x, start.y);
@@ -62,7 +82,7 @@ class Segment {
     return Math.min(1, Math.max(0, axis.dot(PVector.sub(point, start)) / axis.dot(axis)));
   }
   
-  float distanceToPoint(PVector point) {
+  float distanceToPoint(PVector point) {  // return distance from segment to the point
     float a = nearestAlpha(point);
     PVector axis = PVector.sub(end, start);
     return point.dist(PVector.add(start, axis.mult(a)));

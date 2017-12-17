@@ -29,15 +29,15 @@ class Car {
   }
  
   void draw() {
-    pushMatrix();
+    strokeWeight(.5);
+    stroke(0);
     fill(c);
+    pushMatrix();
     PVector p = location();
     float heading = PVector.sub(s.end, s.start).heading();
     translate(p.x, p.y);
-    rotate(heading);
-    
-    rect(-10, -5, 20, 10);
-    
+    rotate(heading);    
+    rect(-10, -4, 20, 8);
     popMatrix();
   }
   

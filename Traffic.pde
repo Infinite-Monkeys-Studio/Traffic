@@ -9,6 +9,8 @@ ArrayList<Segment> globalSegments;
 boolean paused = false;
 boolean editMode = false;
 boolean helpMode = false;
+boolean oneway = true;
+int numlanes = 1;
 
 Segment newSegment;
 
@@ -35,9 +37,7 @@ void draw() {
     for(Car c : globalCars) {
       c.draw();
     }
-    
     for(Segment s : globalSegments) {
-      s.draw();
       s.drawEditMode();
     }
     
@@ -90,6 +90,8 @@ void keyTyped() {
       for (Car c1:s1.cars) globalCars.remove(c1);
       globalSegments.remove(s1);
       break;
+    case 'q': oneway = !oneway; break;
+    case '1':case '2':case '3': numlanes = Character.getNumericValue(k); break;
     case '/': case '?':
       helpMode = !helpMode; break;
   }
@@ -110,11 +112,16 @@ void drawHelp() {
     "? - show help",
     "Esc - exit",
     "", 
-    "In edit mode, click and drag to create a road."
+    "In edit mode, click and drag to create a road.",
+    "123 - one, two, three lane road",
+    "q - toggle one, two way"
   };
   int ts = (int)(height / 50);
   textSize(ts);
   fill(200);
+  if (editMode) {
+    text(numlanes + " lane " + (oneway?"one-way":"each way"),ts,ts);
+  }
   if (!helpMode) {
     text("? for Help",ts/2,height-ts/3);
     return;
@@ -136,7 +143,7 @@ void keyReleased() {
 }
 
 void keys() {
-  int s = 10;
+  float s = 10 / viewZoom;
   if(keyList[65] || keyList[97]) viewPortVec.x += s; //a or A
   if(keyList[100] || keyList[68]) viewPortVec.x -= s; //d or D
   if(keyList[87] || keyList[119]) viewPortVec.y += s; //w or W
@@ -176,9 +183,39 @@ void mouseReleased() {
         }
       }
       newSegment.refresh(); // have to refresh to calculate new length
+      // Add more lanes
+      Segment seg = newSegment;
+      for (int i=1; i<numlanes; ++i)
+        seg = createParallelLane(seg);
+      if (!oneway) {
+        seg = createOppositeLane(newSegment);
+        for (int i=1; i<numlanes; ++i)
+          seg = createParallelLane(seg);
+      }    
       newSegment = null;
     }
   }
+}
+
+float lanesize = 11;
+
+// Creates another lane on the RIGHT side of s, same direction and same distance
+Segment createParallelLane(Segment s) {
+  PVector perp = s.rightDir().mult(lanesize); // rotated 90 CW 
+  Segment seg = new Segment(PVector.add(s.start,perp),PVector.add(s.end,perp));
+  globalSegments.add(seg);
+  seg.leftside = s;
+  s.rightside = seg;
+  return seg;
+}
+
+// Creates another lane on the LEFT side of s, opposite direction and same distance
+Segment createOppositeLane(Segment s) {
+  PVector perp = s.rightDir().mult(-lanesize); // rotated 90 CCW 
+  Segment seg = new Segment(PVector.add(s.end,perp),PVector.add(s.start,perp));
+  globalSegments.add(seg);
+  // todo link up
+  return seg;
 }
 
 void createTestCars() {

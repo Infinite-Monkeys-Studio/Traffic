@@ -33,6 +33,7 @@ void draw() {
   scale(viewZoom);
   translate(viewPortVec.x, viewPortVec.y);
   keys();//runs keys that are held down
+  mouseZoom(); // apply held down stuff
   if(editMode) { //edit mode pauses and draws in a different mode
     for(Car c : globalCars) {
       c.draw();
@@ -70,31 +71,43 @@ void keyTyped() {
       editMode = !editMode;
       paused = editMode;
       break;
-    case 'g': // find the nearest start of a road and make a car on it.
+    case 'g': 
       Segment s = nearestSegment(mv);
-      if (s == null) break;
-      Car newCar = new Car();
-      globalCars.add(newCar);
-      Utils.addCar(s, newCar);
-      newCar.alpha = s.nearestAlpha(mv);
+      if (s != null) createCar(s, s.nearestAlpha(mv));
       break;
     case 'r':
-      Car c = nearestCar(mv);
-      if (c == null) break;
-      globalCars.remove(c);
-      c.s.cars.remove(c);
+      removeCar(nearestCar(mv));
       break;
     case 't':
-      Segment s1 = nearestSegment(mv);
-      if (s1 == null) break;
-      for (Car c1:s1.cars) globalCars.remove(c1);
-      globalSegments.remove(s1);
+      removeSegment(nearestSegment(mv));
       break;
     case 'q': oneway = !oneway; break;
     case '1':case '2':case '3': numlanes = Character.getNumericValue(k); break;
     case '/': case '?':
       helpMode = !helpMode; break;
   }
+}
+
+
+void createCar(Segment s, float alpha) {      
+  Car newCar = new Car();
+  globalCars.add(newCar);
+  Utils.addCar(s, newCar);
+  newCar.alpha = alpha;
+}
+
+void removeCar(Car c) {
+  if (c == null) return;
+  globalCars.remove(c);
+  c.s.cars.remove(c);
+}
+
+void removeSegment(Segment s1) {
+  if (s1 == null) return;
+  for (Car c1:s1.cars) globalCars.remove(c1);
+  if (s1.leftside != null) s1.leftside.rightside = null;
+  if (s1.rightside != null) s1.rightside.leftside = null;
+  globalSegments.remove(s1);
 }
 
 void drawHelp() {
@@ -195,6 +208,23 @@ void mouseReleased() {
       newSegment = null;
     }
   }
+}
+
+float wheelPos = 0;
+
+void mouseWheel(MouseEvent event) {
+  float e = event.getCount();
+  wheelPos += e < 0 ? -1 : 1;
+}
+
+void mouseZoom() {
+  if (Math.abs(wheelPos)<.1) return;
+  wheelPos *= 0.5;
+  float dz = (float) Math.pow(1.01, -wheelPos);
+  viewZoom *= dz;
+  // zoom toward mouse pointer
+  PVector mv = new PVector(mouseX - width/2, mouseY - height/2);
+  viewPortVec.add(mv.mult(1 - dz));
 }
 
 float lanesize = 11;

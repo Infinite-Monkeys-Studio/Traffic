@@ -3,10 +3,6 @@ float viewZoom;
 boolean[] keyList = new boolean[256];
 
 
-ArrayList<Car> globalCars;
-ArrayList<Segment> globalSegments;
-ArrayList<Junction> globalJunctions;
-
 boolean paused = false;
 boolean editMode = false;
 boolean helpMode = false;
@@ -14,15 +10,14 @@ boolean oneway = true;
 int numlanes = 1;
 
 Segment newSegment;
+World world;
 
 void setup() {
   size(800, 800);
   surface.setResizable(true);
   viewPortVec = new PVector(0, 0);
   viewZoom = 1;
-  globalSegments = new ArrayList<Segment>();
-  globalJunctions = new ArrayList<Junction>();
-  globalCars = new ArrayList<Car>();
+  world = new World();
   createTestSegments();
   createTestCars();
 }
@@ -37,27 +32,12 @@ void draw() {
   keys();//runs keys that are held down
   mouseZoom(); // apply held down stuff
   if(editMode) { //edit mode pauses and draws in a different mode
-    for(Car c : globalCars) {
-      c.draw();
-    }
-    for(Segment s : globalSegments) {
-      s.drawEditMode();
-    }
-    
     if(newSegment != null) {
       PVector end = mouseVector();
       line(newSegment.start.x, newSegment.start.y, end.x, end.y);
     }
-  } else { //run mode just simulates.
-    for(Segment s : globalSegments) {
-      s.draw();
-      if(!paused) s.step();
-    }
-    
-    for(Car c : globalCars) {
-      c.draw();
-    }
   }
+  world.draw(editMode);
   
 }
 
@@ -74,14 +54,14 @@ void keyTyped() {
       paused = editMode;
       break;
     case 'g': 
-      Segment s = nearestSegment(mv);
-      if (s != null) createCar(s, s.nearestAlpha(mv));
+      Segment s = world.nearestSegment(mv);
+      if (s != null) world.createCar(s, s.nearestAlpha(mv));
       break;
     case 'r':
-      removeCar(nearestCar(mv));
+      world.removeCar(world.nearestCar(mv));
       break;
     case 't':
-      removeSegment(nearestSegment(mv));
+      world.removeSegment(world.nearestSegment(mv));
       break;
     case 'q': oneway = !oneway; break;
     case '1':case '2':case '3': numlanes = Character.getNumericValue(k); break;
@@ -90,27 +70,6 @@ void keyTyped() {
   }
 }
 
-
-void createCar(Segment s, float alpha) {      
-  Car newCar = new Car();
-  globalCars.add(newCar);
-  Utils.addCar(s, newCar);
-  newCar.alpha = alpha;
-}
-
-void removeCar(Car c) {
-  if (c == null) return;
-  globalCars.remove(c);
-  c.s.cars.remove(c);
-}
-
-void removeSegment(Segment s1) {
-  if (s1 == null) return;
-  for (Car c1:s1.cars) globalCars.remove(c1);
-  if (s1.leftside != null) s1.leftside.rightside = null;
-  if (s1.rightside != null) s1.rightside.leftside = null;
-  globalSegments.remove(s1);
-}
 
 void drawHelp() {
   String[] list = {
@@ -169,7 +128,10 @@ void keys() {
 
 void mousePressed() {
   if(editMode) {
-    newSegment = new Segment(mouseVector());
+    PVector mv = mouseVector();
+    Junction j = world.nearestJunction(mv);
+    if (j == null) j = world.addJunction(mv);
+    newSegment = j.addSegOut(new Segment(mv));
   }
 }
 
@@ -180,32 +142,7 @@ void mouseReleased() {
     if(newSegment != null) { //make sure we are making a segment
       newSegment.end = mouseVector();
       newSegment.refresh(); // have to refresh to calculate new length
-      globalSegments.add(newSegment);
-      float r = 30 * numlanes * (oneway?1:2);
-      PVector pos = newSegment.axis().normalize().mult(r*0.7);
-      Junction j1 = nearestJunction(newSegment.start);
-      if (j1 == null) {
-        j1 = new Junction(PVector.sub(newSegment.start, pos), r);
-        globalJunctions.add(j1);
-      }
-      j1.segOut.add(newSegment);
-      Junction j2 = nearestJunction(newSegment.end);
-      if (j2 == null || j1 == j2) {
-        j2 = new Junction(PVector.add(newSegment.end, pos), r);
-        globalJunctions.add(j2);
-      }
-      newSegment.junction = j2;
-      j2.segIn.add(newSegment);
-        
-      // Add more lanes
-      Segment seg = newSegment;
-      for (int i=1; i<numlanes; ++i)
-        seg = createParallelLane(seg);
-      if (!oneway) {
-        seg = createOppositeLane(newSegment);
-        for (int i=1; i<numlanes; ++i)
-          seg = createParallelLane(seg);
-      }    
+      world.addSegment(newSegment, oneway, numlanes);
       newSegment = null;
     }
   }
@@ -228,94 +165,37 @@ void mouseZoom() {
   viewPortVec.add(mv.mult(1 - dz));
 }
 
-float lanesize = 11;
-
-// Creates another lane on the RIGHT side of s, same direction and same distance
-Segment createParallelLane(Segment s) {
-  PVector perp = s.rightDir().mult(lanesize); // rotated 90 CW 
-  Segment seg = new Segment(PVector.add(s.start,perp),PVector.add(s.end,perp));
-  globalSegments.add(seg);
-  seg.leftside = s;
-  s.rightside = seg;
-  return seg;
-}
-
-// Creates another lane on the LEFT side of s, opposite direction and same distance
-Segment createOppositeLane(Segment s) {
-  PVector perp = s.rightDir().mult(-lanesize); // rotated 90 CCW 
-  Segment seg = new Segment(PVector.add(s.end,perp),PVector.add(s.start,perp));
-  globalSegments.add(seg);
-  // todo link up
-  return seg;
-}
 
 void createTestCars() {
+  
   Car test = new Car();
   test.driver.goalRate = 1.5;
-  globalCars.add(test);
-  Utils.addCar(globalSegments.get(1), test);
+  // TODO  -- this is ugly!  combine next two lines into single world method.
+  world.globalCars.add(test);
+  Utils.addCar(world.globalSegments.get(1), test);
   
-  float l = globalSegments.get(0).length;
+  float l = world.globalSegments.get(0).length;
   for(int i = 0; i < 4; i++) {
     Car c = new Car();
     c.alpha = ((i*55)/l);
-    globalCars.add(c);    
-    Utils.addCar(globalSegments.get(0), c);   
+    world.globalCars.add(c);    
+    Utils.addCar(world.globalSegments.get(0), c);   
   } 
 }
 
 void createTestSegments() {
-  Segment s1 = new Segment(new PVector(-200,-200), new PVector(-200,200));
-  globalSegments.add(s1);
-  Segment s2 = new Segment(new PVector(-200,200), new PVector(200,200));
-  globalSegments.add(s2);
-  Segment s3 = new Segment(new PVector(200,200), new PVector(200,-200));
-  globalSegments.add(s3);
-  Segment s4 = new Segment(new PVector(200,-200), new PVector(-200,-200));
-  globalSegments.add(s4);
-  
+  boolean w=false; int n=2;
+  PVector a = new PVector(-200, -200);
+  PVector b = new PVector(-200, 200);
+  PVector c = new PVector(200, 200);
+  PVector d = new PVector(200, -200);
+  world.addSegment(new Segment(a, b), w, n);
+  world.addSegment(new Segment(b, c), w, n);
+  world.addSegment(new Segment(c, d), w, n);
+  world.addSegment(new Segment(d, a), w, n);
 }
 
 // corrects for screen pan and zoom
 PVector mouseVector() {
   return PVector.sub(new PVector(mouseX - width/2, mouseY - height/2).mult(1 / viewZoom), viewPortVec);
-}
-
-Car nearestCar(PVector p) {
-  float dist = 1e9;
-  Car car = null;
-  for(Car c : globalCars) {
-    float td = c.location().dist(p);
-    if (car == null || td < dist){
-      dist = td;
-      car = c;
-    }
-  }
-  return car;
-}
-
-Segment nearestSegment(PVector p) {
-  float dist = 1e9;
-  Segment seg = null;
-  for(Segment s : globalSegments) {
-    float td = s.distanceToPoint(p);
-    if(seg == null || td < dist){
-      dist = td;
-      seg = s;
-    }
-  }
-  return seg;
-}
-
-Junction nearestJunction(PVector p) {
-  float dist = 1e9;
-  Junction jun = null;
-  for(Junction j : globalJunctions) {
-    float td = PVector.dist(j.pos, p);
-    if(jun == null || td < dist){
-      dist = td;
-      jun = j;
-    }
-  }
-  return jun;
 }

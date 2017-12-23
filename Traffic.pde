@@ -143,6 +143,7 @@ void mouseReleased() {
       newSegment.end = mouseVector();
       newSegment.refresh(); // have to refresh to calculate new length
 <<<<<<< HEAD
+<<<<<<< HEAD
       globalSegments.add(newSegment);
       float r = 30 * numlanes * (oneway?1:2);
       PVector pos = newSegment.axis().normalize().mult(r*0.7);
@@ -169,6 +170,9 @@ void mouseReleased() {
         for (int i=1; i<numlanes; ++i)
           seg = createParallelLane(seg);
       }    
+=======
+      world.addSegment(newSegment, oneway, numlanes);
+>>>>>>> cc887e80bd8b461ba1d8f4dd234562bb64a1e9dd
 =======
       world.addSegment(newSegment, oneway, numlanes);
 >>>>>>> cc887e80bd8b461ba1d8f4dd234562bb64a1e9dd
@@ -203,10 +207,15 @@ void createTestCars() {
   globalCars.add(test);
   Utils.addCar(globalSegments.get(1), test);
 =======
+=======
+>>>>>>> cc887e80bd8b461ba1d8f4dd234562bb64a1e9dd
   test.driver.goalRate = 1.5;
   // TODO  -- this is ugly!  combine next two lines into single world method.
   world.globalCars.add(test);
   Utils.addCar(world.globalSegments.get(1), test);
+<<<<<<< HEAD
+>>>>>>> cc887e80bd8b461ba1d8f4dd234562bb64a1e9dd
+=======
 >>>>>>> cc887e80bd8b461ba1d8f4dd234562bb64a1e9dd
   
   float l = world.globalSegments.get(0).length;

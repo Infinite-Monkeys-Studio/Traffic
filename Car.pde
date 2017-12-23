@@ -65,15 +65,15 @@ class Car {
   }
   
   void findNewRoads() {
-    int count = s.segments.size(); //<>//
+    int count = 1;// s.segments.size(); //<>//
     if(count == 0) { // no new roads to go too. 
       alpha = 0; // TODO delete car instead of looping them on the same road
       return;
     }
     int i = floor(random(0,count));
-    Segment newSegment = s.segments.get(i);
+  //  Segment newSegment = s.segments.get(i);
     alpha = 0; //must set alpha before sorting
-    Utils.addCar(newSegment, this);
+  //  Utils.addCar(newSegment, this);
   }
   
   Car copy() { // by value copy

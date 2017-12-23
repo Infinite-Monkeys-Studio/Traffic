@@ -274,10 +274,6 @@ void createTestSegments() {
   Segment s4 = new Segment(new PVector(200,-200), new PVector(-200,-200));
   globalSegments.add(s4);
   
-  s1.link(s2);
-  s2.link(s3);
-  s3.link(s4);
-  s4.link(s1);
 }
 
 // corrects for screen pan and zoom

@@ -5,7 +5,8 @@ class Segment {
   float length; // must be recalculated anytime the start or end change
   Segment leftside;   // cars can change lanes into left or right side (might be null)
   Segment rightside;  // these must be parallel segments in the same direction and distance
-  Junction junction;
+  Junction startjun;
+  Junction endjun; 
   
   Segment(PVector start) {
     this(start, start.copy().add(0,.1));

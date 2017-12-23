@@ -1,28 +1,28 @@
 class Junction {
-  private ArrayList<Segment> segIn;
-  private ArrayList<Segment> segOut;
+  private ArrayList<Segment> enders;
+  private ArrayList<Segment> starters;
   PVector pos;
   float radius;
   
   Junction(PVector p, float r) {
     pos = p; radius = r;
-    segIn = new ArrayList<Segment>();
-    segOut = new ArrayList<Segment>();
+    enders = new ArrayList<Segment>();
+    starters = new ArrayList<Segment>();
   }
   
   Junction(PVector p) {
     this(p, 30);
   }
   
-  Segment addSegOut(Segment s) {
+  Segment addStarter(Segment s) {
     s.startjun = this;
-    segOut.add(s);
+    starters.add(s);
     return s;
   }
   
-  Segment addSegIn(Segment s) {
+  Segment addEnder(Segment s) {
     s.endjun = this;
-    segIn.add(s);
+    enders.add(s);
     return s;
   }
   
@@ -35,7 +35,7 @@ class Junction {
     ellipse(pos.x, pos.y, radius, radius);
     stroke(128);
     strokeWeight(.5);
-    for (Segment s: segIn) line(s.end.x, s.end.y, pos.x, pos.y);
-    for (Segment s: segOut) line(s.start.x, s.start.y, pos.x, pos.y);
+    for (Segment s: enders) line(s.end.x, s.end.y, pos.x, pos.y);
+    for (Segment s: starters) line(s.start.x, s.start.y, pos.x, pos.y);
   }
 }

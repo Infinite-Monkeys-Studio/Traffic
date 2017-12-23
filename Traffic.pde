@@ -8,6 +8,7 @@ boolean editMode = false;
 boolean helpMode = false;
 boolean oneway = true;
 int numlanes = 1;
+float lanesize = 11;
 
 Segment newSegment;
 World world;
@@ -131,7 +132,7 @@ void mousePressed() {
     PVector mv = mouseVector();
     Junction j = world.nearestJunction(mv);
     if (j == null) j = world.addJunction(mv);
-    newSegment = j.addSegOut(new Segment(mv));
+    newSegment = j.addStarter(new Segment(mv));
   }
 }
 

@@ -5,8 +5,6 @@ class World {
   ArrayList<Segment> globalSegments;
   ArrayList<Junction> globalJunctions;  // todo these should be private
 
-  float lanesize = 11;
-
   World() {
     globalSegments = new ArrayList<Segment>();
     globalJunctions = new ArrayList<Junction>();
@@ -39,14 +37,14 @@ class World {
         j1 = new Junction(PVector.sub(newSegment.start, pos), r);
         globalJunctions.add(j1);
       }
-      j1.addSegOut(newSegment);
+      j1.addStarter(newSegment);
     }
     Junction j2 = nearestJunction(newSegment.end);
     if (j2 == null || j2 == newSegment.startjun) {
       j2 = new Junction(PVector.add(newSegment.end, pos), r);
       globalJunctions.add(j2);
     }
-    j2.addSegIn(newSegment);
+    j2.addEnder(newSegment);
       
     // Add more lanes
     Segment seg = newSegment;
@@ -83,8 +81,8 @@ class World {
   Segment addSegment(PVector a, PVector b, Junction c, Junction d) {
     Segment seg = new Segment(a, b);
     globalSegments.add(seg);
-    c.addSegOut(seg);
-    d.addSegIn(seg);
+    c.addStarter(seg);
+    d.addEnder(seg);
     return seg;
   }
   
@@ -93,8 +91,8 @@ class World {
     for (Car c1:s1.cars) globalCars.remove(c1);
     if (s1.leftside != null) s1.leftside.rightside = null;
     if (s1.rightside != null) s1.rightside.leftside = null;
-    s1.endjun.segIn.remove(s1);
-    s1.startjun.segOut.remove(s1);
+    s1.endjun.enders.remove(s1);
+    s1.startjun.starters.remove(s1);
     globalSegments.remove(s1);
   }
 

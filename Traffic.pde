@@ -5,6 +5,7 @@ boolean[] keyList = new boolean[256];
 
 ArrayList<Car> globalCars;
 ArrayList<Segment> globalSegments;
+ArrayList<Junction> globalJunctions;
 
 boolean paused = false;
 boolean editMode = false;
@@ -20,6 +21,7 @@ void setup() {
   viewPortVec = new PVector(0, 0);
   viewZoom = 1;
   globalSegments = new ArrayList<Segment>();
+  globalJunctions = new ArrayList<Junction>();
   globalCars = new ArrayList<Car>();
   createTestSegments();
   createTestCars();
@@ -167,16 +169,7 @@ void keys() {
 
 void mousePressed() {
   if(editMode) {
-    //check for segment node
-    newSegment = new Segment(mouseVector(), mouseVector());
-    for(Segment s : globalSegments) {
-      if(Utils.isVectorNear(newSegment.start, s.start, 5)) { //find a segment start to snap too
-        newSegment.start = s.start;
-      } else if(Utils.isVectorNear(newSegment.start, s.end, 5)) {
-        newSegment.start = s.end;
-        s.link(newSegment);
-      }
-    }
+    newSegment = new Segment(mouseVector());
   }
 }
 
@@ -186,16 +179,24 @@ void mouseReleased() {
   if(editMode) {
     if(newSegment != null) { //make sure we are making a segment
       newSegment.end = mouseVector();
-      globalSegments.add(newSegment);
-      for(Segment s : globalSegments) {
-        if(Utils.isVectorNear(newSegment.end, s.start, 5)) {// snap to nearby segments
-          newSegment.end = s.start;
-          newSegment.link(s);
-        }else if(Utils.isVectorNear(newSegment.end, s.end, 5)) {
-          newSegment.end = s.end;
-        }
-      }
       newSegment.refresh(); // have to refresh to calculate new length
+      globalSegments.add(newSegment);
+      float r = 30 * numlanes * (oneway?1:2);
+      PVector pos = newSegment.axis().normalize().mult(r*0.7);
+      Junction j1 = nearestJunction(newSegment.start);
+      if (j1 == null) {
+        j1 = new Junction(PVector.sub(newSegment.start, pos), r);
+        globalJunctions.add(j1);
+      }
+      j1.segOut.add(newSegment);
+      Junction j2 = nearestJunction(newSegment.end);
+      if (j2 == null || j1 == j2) {
+        j2 = new Junction(PVector.add(newSegment.end, pos), r);
+        globalJunctions.add(j2);
+      }
+      newSegment.junction = j2;
+      j2.segIn.add(newSegment);
+        
       // Add more lanes
       Segment seg = newSegment;
       for (int i=1; i<numlanes; ++i)
@@ -308,4 +309,17 @@ Segment nearestSegment(PVector p) {
     }
   }
   return seg;
+}
+
+Junction nearestJunction(PVector p) {
+  float dist = 1e9;
+  Junction jun = null;
+  for(Junction j : globalJunctions) {
+    float td = PVector.dist(j.pos, p);
+    if(jun == null || td < dist){
+      dist = td;
+      jun = j;
+    }
+  }
+  return jun;
 }

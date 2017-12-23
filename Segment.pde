@@ -1,23 +1,29 @@
 class Segment {
   ArrayList<Car> cars;
-  ArrayList<Segment> segments; //list of roads a car can goto from this one. not sorted
   PVector start;
   PVector end;
   float length; // must be recalculated anytime the start or end change
   Segment leftside;   // cars can change lanes into left or right side (might be null)
   Segment rightside;  // these must be parallel segments in the same direction and distance
+  Junction junction;
+  
+  Segment(PVector start) {
+    this(start, start.copy().add(0,.1));
+  }
   
   Segment(PVector start, PVector end) {
     this.start = start;
     this.end = end;
-    this.length = PVector.dist(start, end);
-    
+    this.length = PVector.dist(start, end);    
     cars = new ArrayList<Car>();
-    segments = new ArrayList<Segment>();
   }
 
   PVector rightDir() {  // return a direction to the RIGHT of cars on this segment
     return new PVector(start.y - end.y, end.x - start.x).normalize();
+  }
+  
+  PVector axis() {
+    return PVector.sub(end, start);
   }
 
   void draw() {
@@ -45,8 +51,9 @@ class Segment {
     pushMatrix();
     fill(255, 0, 0);
     translate(start.x, start.y);
-    ellipse(0, 0, 10, 10);
-    ellipse(end.x-start.x, end.y-start.y, 10, 10);
+    ellipseMode(RADIUS);
+    ellipse(0, 0, 5, 5);
+    ellipse(end.x-start.x, end.y-start.y, 5, 5);
 
     PVector h = PVector.sub(end, start).div(2);
     translate(h.x, h.y); // goto middle of line to put cheveron
@@ -62,17 +69,11 @@ class Segment {
   
   void step() {
     Car previousCar = null; //passed to car so they don't have to search
-    
     for(int i = 0; i < cars.size(); i++) {
       Car c = cars.get(i);
       c.step(previousCar);
-      
       previousCar = c;
     }
-  }
-  
-  void link(Segment s) { //add s to the list of segments that a car can goto after this one
-    segments.add(s);
   }
   
   float nearestAlpha(PVector point) { 

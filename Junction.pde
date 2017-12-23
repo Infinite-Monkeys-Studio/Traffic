@@ -38,4 +38,8 @@ class Junction {
     for (Segment s: enders) line(s.end.x, s.end.y, pos.x, pos.y);
     for (Segment s: starters) line(s.start.x, s.start.y, pos.x, pos.y);
   }
+  
+  ArrayList<Segment> openStarters(Segment ender) {
+    return starters;
+  }
 }

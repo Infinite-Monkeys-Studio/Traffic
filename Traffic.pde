@@ -142,40 +142,7 @@ void mouseReleased() {
     if(newSegment != null) { //make sure we are making a segment
       newSegment.end = mouseVector();
       newSegment.refresh(); // have to refresh to calculate new length
-<<<<<<< HEAD
-<<<<<<< HEAD
-      globalSegments.add(newSegment);
-      float r = 30 * numlanes * (oneway?1:2);
-      PVector pos = newSegment.axis().normalize().mult(r*0.7);
-      Junction j1 = nearestJunction(newSegment.start);
-      if (j1 == null) {
-        j1 = new Junction(PVector.sub(newSegment.start, pos), r);
-        globalJunctions.add(j1);
-      }
-      j1.segOut.add(newSegment);
-      Junction j2 = nearestJunction(newSegment.end);
-      if (j2 == null || j1 == j2) {
-        j2 = new Junction(PVector.add(newSegment.end, pos), r);
-        globalJunctions.add(j2);
-      }
-      newSegment.startjun = j2;
-      j2.segIn.add(newSegment);
-        
-      // Add more lanes
-      Segment seg = newSegment;
-      for (int i=1; i<numlanes; ++i)
-        seg = createParallelLane(seg);
-      if (!oneway) {
-        seg = createOppositeLane(newSegment);
-        for (int i=1; i<numlanes; ++i)
-          seg = createParallelLane(seg);
-      }    
-=======
       world.addSegment(newSegment, oneway, numlanes);
->>>>>>> cc887e80bd8b461ba1d8f4dd234562bb64a1e9dd
-=======
-      world.addSegment(newSegment, oneway, numlanes);
->>>>>>> cc887e80bd8b461ba1d8f4dd234562bb64a1e9dd
       newSegment = null;
     }
   }
@@ -200,25 +167,12 @@ void mouseZoom() {
 
 
 void createTestCars() {
-  
   Car test = new Car();
-<<<<<<< HEAD
-<<<<<<< HEAD
   //test.driver.naturalSpeed -= .5;
-  globalCars.add(test);
-  Utils.addCar(globalSegments.get(1), test);
-=======
-=======
->>>>>>> cc887e80bd8b461ba1d8f4dd234562bb64a1e9dd
-  test.driver.goalRate = 1.5;
   // TODO  -- this is ugly!  combine next two lines into single world method.
   world.globalCars.add(test);
   Utils.addCar(world.globalSegments.get(1), test);
-<<<<<<< HEAD
->>>>>>> cc887e80bd8b461ba1d8f4dd234562bb64a1e9dd
-=======
->>>>>>> cc887e80bd8b461ba1d8f4dd234562bb64a1e9dd
-  
+
   float l = world.globalSegments.get(0).length;
   for(int i = 0; i < 4; i++) {
     Car c = new Car();

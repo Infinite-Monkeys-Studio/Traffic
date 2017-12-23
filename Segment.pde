@@ -69,11 +69,9 @@ class Segment {
   }
   
   void step() {
-    Car previousCar = null; //passed to car so they don't have to search
     for(int i = 0; i < cars.size(); i++) {
       Car c = cars.get(i);
-      c.step(previousCar);
-      previousCar = c;
+      c.step();
     }
   }
   

@@ -203,6 +203,7 @@ void createTestCars() {
   
   Car test = new Car();
 <<<<<<< HEAD
+<<<<<<< HEAD
   //test.driver.naturalSpeed -= .5;
   globalCars.add(test);
   Utils.addCar(globalSegments.get(1), test);

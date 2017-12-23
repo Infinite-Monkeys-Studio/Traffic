@@ -7,6 +7,7 @@ class Car {
   
   Car() {
     this(color(random(0,255), random(0,255), random(0,255)), null, 0, 0);
+    driver.naturalSpeed = random(1.2, 1.9);
   }
   
   Car(color c, Segment s, float alpha, float rate) {
@@ -48,7 +49,7 @@ class Car {
     return alpha * s.length;
   }
   
-  Car copy() { // by value copy
+  Car copy() { // by value copy //<>//
     return new Car(c,s,alpha,rate,driver.copy());
   }
 }

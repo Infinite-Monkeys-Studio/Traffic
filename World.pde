@@ -29,7 +29,7 @@ class World {
   // also it will add extra lanes.
   void addSegment(Segment newSegment, boolean oneway, int numlanes) {
     globalSegments.add(newSegment);
-    float r = 15 * numlanes * (oneway?1:2);
+    float r = lanesize * numlanes * (oneway?1:2) * 0.8;
     if (newSegment.startjun == null) {
       Junction j1 = nearestJunction(newSegment.start);
       if (j1 == null) {
@@ -144,7 +144,7 @@ class World {
   }
   
   Junction nearestJunction(PVector p) {
-    return nearestJunction(p, 70);
+    return nearestJunction(p, 40);
   }
   
   Junction nearestJunction(PVector p, float dist) {

@@ -29,6 +29,13 @@ class Driver {
   //}
   
   float step() {
+    if(myCar.alpha > 1) {
+      Segment nseg = findNewRoad();
+      Utils.addCar(nseg, myCar);
+      myCar.alpha = 0;
+      return 0;
+    }
+    
     int myIndex = myCar.s.cars.indexOf(myCar);
     float safeSpeed;
     if(myIndex > 0) {
@@ -45,7 +52,7 @@ class Driver {
       
       if(abs(acc) > comfAcc) {
         safeSpeed = myCar.rate + acc;
-        if(safeSpeed < 0) safeSpeed = 0; //<>//
+        if(safeSpeed < 0) safeSpeed = 0;
       } else {
         safeSpeed = naturalSpeed;
       }
@@ -54,9 +61,13 @@ class Driver {
       safeSpeed = naturalSpeed;
     }
     
-    
-    
     return safeSpeed;
+  }
+  
+  Segment findNewRoad() {
+    ArrayList<Segment> openSegs = myCar.s.endjun.openStarters(myCar.s);
+    int i = int(random(0, openSegs.size()));
+    return openSegs.get(i);
   }
   
   Driver copy() {

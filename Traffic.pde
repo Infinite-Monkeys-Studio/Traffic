@@ -155,17 +155,20 @@ float wheelPos = 0;
 
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
-  wheelPos += e < 0 ? -1 : 1;
+  wheelPos += e < 0 ? -1 : e > 0 ? 1 : 0; //<>//
+  println(e);
 }
 
 void mouseZoom() {
   if (Math.abs(wheelPos)<.1) return;
-  wheelPos *= 0.5;
-  float dz = (float) Math.pow(1.01, -wheelPos);
+  wheelPos *= .9;
+  float dz = (float) Math.pow(1.05, -wheelPos);
   viewZoom *= dz;
   // zoom toward mouse pointer
-  PVector mv = new PVector(mouseX - width/2, mouseY - height/2);
-  viewPortVec.add(mv.mult(1 - dz));
+  if(dz > 1) {
+    PVector mv = new PVector(mouseX - width/2, mouseY - height/2);
+    viewPortVec.add(mv.mult(1 - dz));
+  }
 }
 
 

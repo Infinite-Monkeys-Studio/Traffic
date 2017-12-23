@@ -44,4 +44,8 @@ class Junction {
       drawChevron(pos, s.start, 3);
     }
   }
+  
+  ArrayList<Segment> openStarters(Segment ender) {
+    return starters;
+  }
 }

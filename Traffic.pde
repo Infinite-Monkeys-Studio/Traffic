@@ -168,13 +168,12 @@ void mouseZoom() {
 
 
 void createTestCars() {
-  
   Car test = new Car();
-  test.driver.goalRate = 1.5;
+  //test.driver.naturalSpeed -= .5;
   // TODO  -- this is ugly!  combine next two lines into single world method.
   world.globalCars.add(test);
   Utils.addCar(world.globalSegments.get(1), test);
-  
+
   float l = world.globalSegments.get(0).length;
   for(int i = 0; i < 4; i++) {
     Car c = new Car();

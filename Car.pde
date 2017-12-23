@@ -6,18 +6,11 @@ class Car {
   Driver driver;
   
   Car() {
-    c = color(random(0,255), random(0,255), random(0,255));
-    rate = 0;
-    alpha = 0;
-    driver = new Driver();
+    this(color(random(0,255), random(0,255), random(0,255)), null, 0, 0);
   }
   
-  Car(color c, Segment s, float alpha, float goalRate, float rate) {
-    this.c = c;
-    this.s = s;
-    this.alpha = alpha;
-    this.rate = rate;
-    this.driver = new Driver(goalRate);
+  Car(color c, Segment s, float alpha, float rate) {
+    this(c, s, alpha, rate, new Driver());
   }
   
   Car(color c, Segment s, float alpha, float rate, Driver driver) {
@@ -26,6 +19,7 @@ class Car {
     this.alpha = alpha;
     this.rate = rate;
     this.driver = driver;
+    driver.link(this);
   }
  
   void draw() {
@@ -45,23 +39,13 @@ class Car {
     return PVector.lerp(s.start, s.end, alpha);
   }
   
-  void step(Car carAhead) {
-    alpha += rate / s.length; //advance
-    float dist;
-    float speed;
-    
-    if(alpha>=1) {findNewRoads(); return;} // if I over shot, find a new road
-    if(carAhead  == null) {
-      dist = s.length - (s.length * alpha);
-      speed = -1;
-    } else {     
-      float aheadPos = s.length * carAhead.alpha;
-      float myPos = s.length * alpha;
-      dist = aheadPos - myPos;
-      speed = carAhead.rate;
-    }
-    
-    rate = driver.step(dist, speed);
+  void step() {
+    alpha += rate / s.length; //advance    
+    rate = driver.step();
+  }
+  
+  float positionOnRoad() {
+    return alpha * s.length;
   }
   
   void findNewRoads() {

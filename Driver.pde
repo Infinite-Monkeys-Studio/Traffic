@@ -1,40 +1,65 @@
 class Driver {
+  //driver stats
+  float naturalSpeed; // in px/frame
+  float followingTime; // in frames
+  float comfAcc; //comfortable breaking acceleration in px/frame/frame
   
-  float goalRate; // rates are in px/s
+  
+  Car myCar;
   
   Driver() {
-    this.goalRate = 2;
+    this.naturalSpeed = 1.46; //about 30mph
+    this.followingTime = 120;
+    this.comfAcc = 1.77; //about 1g
+    myCar = null;
   }
   
-  Driver(float goalRate) {
-    this.goalRate = goalRate;
+  Driver(float naturalSpeed, float followingTime, Car myCar) {
+    this.naturalSpeed = naturalSpeed;
+    this.followingTime = followingTime;
+    this.myCar = myCar;
   }
   
-  float step(float distanceToObject, float speedOfObject) {
-    float rate = goalRate; // else follow //<>//
-    if(speedOfObject < 0) {// -1 is the intersection flag
-      if(distanceToObject > 70) {
-        rate = goalRate;
+  void link(Car myCar) {
+    this.myCar = myCar;
+  }
+  
+  //float step(float distanceToObject, float speedOfObject) {
+  //  return naturalSpeed;
+  //}
+  
+  float step() {
+    int myIndex = myCar.s.cars.indexOf(myCar);
+    float safeSpeed;
+    if(myIndex > 0) {
+      // there is a car ahead of me
+      Car carAhead = myCar.s.cars.get(myIndex - 1);
+      float distanceToObject = myCar.positionOnRoad() - carAhead.positionOnRoad();
+      float Vm = myCar.rate;
+      float Vt = carAhead.rate;
+      float followingDist = followingTime * Vt;
+      float dist = distanceToObject - followingDist;
+      if(dist < 0) dist = 0;
+      
+      float acc = (sq(Vm) - sq(Vt)) / 2*dist; 
+      
+      if(abs(acc) > comfAcc) {
+        safeSpeed = myCar.rate + acc;
+        if(safeSpeed < 0) safeSpeed = 0; //<>//
       } else {
-        rate = goalRate*distanceToObject/70 + .1;
-        if(rate > goalRate) rate = goalRate;
+        safeSpeed = naturalSpeed;
       }
     } else {
-      if(distanceToObject > 70) {//if safe, drive fast
-        rate = goalRate;
-      } else if(distanceToObject < 40) {
-        rate = speedOfObject;
-      } else if(distanceToObject < 50 && rate > 0) { // if close slow down
-        rate -= .1;
-      } else if(distanceToObject < 40) { // if too close stop
-        rate = 0;
-      }
+      // I am the lead car
+      safeSpeed = naturalSpeed;
     }
     
-    return rate;
+    
+    
+    return safeSpeed;
   }
   
   Driver copy() {
-    return new Driver(goalRate);
+    return new Driver(naturalSpeed, followingTime, myCar.copy());
   }
 }

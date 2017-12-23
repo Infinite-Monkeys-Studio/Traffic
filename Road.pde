@@ -14,8 +14,8 @@ class Road {
     list[1] = new ArrayList<Segment>();
     
     // create a new road using all the neighbors of the segment
-    for (Segment i = leftmost(s); i != null; i = i.rightside) list1.add(i);
-    for (Segment i = leftmost(opposite(s)); i != null; i = i.rightside) list1.add(i);
+    for (Segment i = leftmost(s); i != null; i = i.rightside) list[0].add(i);
+    for (Segment i = leftmost(opposite(s)); i != null; i = i.rightside) list[1].add(i);
   }
   
   Segment leftmost(Segment s) {
@@ -31,8 +31,11 @@ class Road {
     return null; // none found!
   }
   
-  void rebut(ArrayList<Segment> ) {
-    if (list1.size()==0) return;
+  // set a=0 or 1, to tell which end of the road to rebut
+  void rebut(int a) {
+    if (list[a].size()==0) return;
+    //int n = list[a].size() + list[1-a].size();
+    
   }
   
   void rebutEnd() {

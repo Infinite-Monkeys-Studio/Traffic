@@ -144,6 +144,8 @@ void mouseReleased() {
       newSegment.end = mouseVector();
       newSegment.refresh(); // have to refresh to calculate new length
       world.addSegment(newSegment, oneway, numlanes);
+      Road r = new Road(newSegment);
+      r.rebutBothEnds();
       newSegment = null;
     }
   }
@@ -190,9 +192,11 @@ void createTestSegments() {
   PVector c = new PVector(200, 200);
   PVector d = new PVector(200, -200);
   world.addSegment(new Segment(a, b), w, n);
-  world.addSegment(new Segment(b, c), w, n);
+  world.addSegment(new Segment(b, c), w, n); //<>//
   world.addSegment(new Segment(c, d), w, n);
   world.addSegment(new Segment(d, a), w, n);
+  
+  //for(Junction j:world.globalJunctions) println(j.pos);
 }
 
 // corrects for screen pan and zoom

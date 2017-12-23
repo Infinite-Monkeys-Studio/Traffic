@@ -13,8 +13,8 @@ class Segment {
   }
   
   Segment(PVector start, PVector end) {
-    this.start = start;
-    this.end = end;
+    this.start = start.copy();
+    this.end = end.copy();
     this.length = PVector.dist(start, end);    
     cars = new ArrayList<Car>();
   }
@@ -27,7 +27,8 @@ class Segment {
     return PVector.sub(end, start);
   }
 
-  void draw() {
+  void draw(boolean editmode) {
+    if (editmode) { drawEditMode(); return; }
     // Draw a fat gray line for the road
     strokeWeight(11);
     strokeCap(ROUND);
@@ -55,14 +56,9 @@ class Segment {
     ellipseMode(RADIUS);
     ellipse(0, 0, 5, 5);
     ellipse(end.x-start.x, end.y-start.y, 5, 5);
-
-    PVector h = PVector.sub(end, start).div(2);
-    translate(h.x, h.y); // goto middle of line to put cheveron
-    rotate(PVector.sub(end, start).heading());
-    line(0, 0, -10, 5);
-    line(0, 0, -10, -5);
     popMatrix();
-  }
+    drawChevron(start, end, 5);
+  }  
   
   void refresh() {// recalculate length of line
     this.length = PVector.dist(start, end);

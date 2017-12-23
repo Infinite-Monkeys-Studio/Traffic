@@ -22,7 +22,7 @@ class Car {
     driver.link(this);
   }
  
-  void draw() {
+  void draw(boolean editmode) {
     strokeWeight(.5);
     stroke(0);
     fill(c);

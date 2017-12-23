@@ -1,5 +1,18 @@
 import java.util.Collections;
 
+
+  void drawChevron(PVector start, PVector end, float size) {
+    pushMatrix();
+    PVector h = PVector.add(end, start).div(2);
+    translate(h.x, h.y); // goto middle of line to put cheveron
+    rotate(PVector.sub(end, start).heading());
+    line(0, 0, -2*size, size);
+    line(0, 0, -2*size, -size);
+    popMatrix();
+  }
+
+
+
 static class Utils {
   //add OR MOVE a car to a new road.
   static void addCar(Segment s, Car c) {
@@ -23,6 +36,7 @@ static class Utils {
     }
     list.add(c);
   }
+
 
   //Takes a car off a road.
   static void removeCar(Segment s, Car c) {

@@ -30,18 +30,17 @@ class World {
   void addSegment(Segment newSegment, boolean oneway, int numlanes) {
     globalSegments.add(newSegment);
     float r = 15 * numlanes * (oneway?1:2);
-    PVector pos = newSegment.axis().normalize().mult(r*0.1);
-    if (newSegment.startjun == null) { //<>//
+    if (newSegment.startjun == null) {
       Junction j1 = nearestJunction(newSegment.start);
       if (j1 == null) {
-        j1 = new Junction(PVector.sub(newSegment.start, pos), r);
+        j1 = new Junction(newSegment.start, r);
         globalJunctions.add(j1);
       }
       j1.addStarter(newSegment);
     }
     Junction j2 = nearestJunction(newSegment.end);
     if (j2 == null || j2 == newSegment.startjun) {
-      j2 = new Junction(PVector.add(newSegment.end, pos), r);
+      j2 = new Junction(newSegment.end, r);
       globalJunctions.add(j2);
     }
     j2.addEnder(newSegment);
@@ -55,6 +54,10 @@ class World {
       for (int i=1; i<numlanes; ++i)
         seg = createParallelLane(seg);
     }    
+    
+    // Rebut the two ends of the road
+    Road road = new Road(newSegment);
+    road.rebutBothEnds();
   }
   
   Junction addJunction(PVector v) {
@@ -98,25 +101,17 @@ class World {
 
   
   void draw(boolean editMode) {
-    if(editMode) { //edit mode pauses and draws in a different mode
-      for(Car c : globalCars) {
-        c.draw();
-      }
-      for(Segment s : globalSegments) {
-        s.drawEditMode();
-      }      
-    } else { //run mode just simulates.
-      for(Segment s : globalSegments) {
-        s.draw();
-        if(!paused) s.step();
-      }
-      
-      for(Car c : globalCars) {
-        c.draw();
-      }
+    for(Segment s : globalSegments) {
+      s.draw(editMode);
+      if(!paused) s.step();
     }
+    
+    for(Car c : globalCars) {
+      c.draw(editMode);
+    }
+  
     for (Junction j : globalJunctions) {
-      j.draw();
+      j.draw(editMode);
     }
   }
   
@@ -149,7 +144,7 @@ class World {
   }
   
   Junction nearestJunction(PVector p) {
-    return nearestJunction(p, 30);
+    return nearestJunction(p, 70);
   }
   
   Junction nearestJunction(PVector p, float dist) {

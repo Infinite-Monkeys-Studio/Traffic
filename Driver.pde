@@ -36,7 +36,7 @@ class Driver {
       return 0;
     }
     
-    int myIndex = myCar.s.cars.indexOf(myCar);
+    int myIndex = myCar.index();
     float safeSpeed;
     if(myIndex > 0) {
       // there is a car ahead of me
@@ -45,10 +45,10 @@ class Driver {
       float Vm = myCar.rate;
       float Vt = carAhead.rate;
       float followingDist = followingTime * Vt;
-      float dist = distanceToObject - followingDist;
+      float dist = distanceToObject - followingDist; //<>//
       if(dist < 0) dist = 0;
       
-      float acc = (sq(Vm) - sq(Vt)) / 2*dist; 
+      float acc = (sq(Vm) - sq(Vt)) / (2*dist); 
       
       if(abs(acc) > comfAcc) {
         safeSpeed = myCar.rate + acc;

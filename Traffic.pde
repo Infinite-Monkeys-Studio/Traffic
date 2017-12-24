@@ -109,7 +109,7 @@ void drawHelp() {
 }
 
 void keyPressed() {
-  //println(keyCode);
+  println(keyCode);
   keyList[keyCode&255] = true;
 }
 
@@ -189,15 +189,15 @@ void createTestCars() {
 }
 
 void createTestSegments() {
-  boolean w=false; int n=2;
+  boolean w=false; int n=1;
   PVector a = new PVector(-200, -200);
   PVector b = new PVector(-200, 200);
-  PVector c = new PVector(200, 200);
+  PVector c = new PVector(200, 200); //<>//
   PVector d = new PVector(200, -200);
   world.addSegment(new Segment(a, b), w, n);
-  world.addSegment(new Segment(b, c), w, n); //<>//
-  world.addSegment(new Segment(c, d), w, n);
-  world.addSegment(new Segment(d, a), w, n);
+//  world.addSegment(new Segment(b, c), w, n); //<>//
+//  world.addSegment(new Segment(c, d), w, n);
+//  world.addSegment(new Segment(d, a), w, n);
   
   //for(Junction j:world.globalJunctions) println(j.pos);
 }

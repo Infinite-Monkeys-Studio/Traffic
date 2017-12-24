@@ -96,9 +96,17 @@ class World {
     if (s1.rightside != null) s1.rightside.leftside = null;
     s1.endjun.enders.remove(s1);
     s1.startjun.starters.remove(s1);
+    removeIfEmpty(s1.endjun);
+    removeIfEmpty(s1.startjun);
     globalSegments.remove(s1);
   }
 
+
+  void removeIfEmpty(Junction j) {
+    if (j.enders.size() == 0 && j.starters.size() == 0) {
+      globalJunctions.remove(j);
+    }
+  }
   
   void draw(boolean editMode) {
     for(Segment s : globalSegments) {

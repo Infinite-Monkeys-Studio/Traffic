@@ -2,7 +2,6 @@ class Segment {
   ArrayList<Car> cars;
   PVector start;
   PVector end;
-  float length; // must be recalculated anytime the start or end change
   Segment leftside;   // cars can change lanes into left or right side (might be null)
   Segment rightside;  // these must be parallel segments in the same direction and distance
   Junction startjun;
@@ -15,7 +14,6 @@ class Segment {
   Segment(PVector start, PVector end) {
     this.start = start.copy();
     this.end = end.copy();
-    this.length = PVector.dist(start, end);    
     cars = new ArrayList<Car>();
   }
 
@@ -25,6 +23,11 @@ class Segment {
   
   PVector axis() {
     return PVector.sub(end, start);
+  }
+
+
+  float length() {
+    return PVector.dist(start, end);
   }
 
   void draw(boolean editmode) {
@@ -60,10 +63,6 @@ class Segment {
     drawChevron(start, end, 5);
   }  
   
-  void refresh() {// recalculate length of line
-    this.length = PVector.dist(start, end);
-  }
-  
   void step() {
     for(int i = 0; i < cars.size(); i++) {
       Car c = cars.get(i);
@@ -73,14 +72,45 @@ class Segment {
   
   float nearestAlpha(PVector point) { 
     // returns the alpha 0..1 that is nearest to the point (such as mouse x y)
-    if (length < 1e-5) return 0;
     PVector axis = PVector.sub(end, start);
-    return Math.min(1, Math.max(0, axis.dot(PVector.sub(point, start)) / axis.dot(axis)));
+    float d = axis.dot(axis);
+    if (d < 1e-5) return 0;
+    return Math.min(1, Math.max(0, axis.dot(PVector.sub(point, start)) / d));
   }
   
   float distanceToPoint(PVector point) {  // return distance from segment to the point
     float a = nearestAlpha(point);
     PVector axis = PVector.sub(end, start);
     return point.dist(PVector.add(start, axis.mult(a)));
+  }  
+  
+  //add OR MOVE a car to a new road.
+  void addCar(Car c, float alpha) {
+    if (c.s != null) c.s.cars.remove(c);//take the car off the old road
+    c.alpha = alpha;
+    insertByOrder(c); //put it on the new road
+    c.s = this; //tell the car what road he's on
   }
+
+  // add the car to the list in a sorted way.
+  // the car with the biggest alpha is the 0th car
+  void insertByOrder(Car c) {
+    if (cars.size() > 0) {
+      for (int i = 0; i < cars.size(); i++) {
+        if (c.alpha > cars.get(i).alpha) {
+          cars.add(i, c);    // add at i
+          return;
+        }
+      }
+    }
+    cars.add(c);  // add at the end
+  }
+
+  boolean isClear(float dist) {
+    // return true if the starting end of the segment does not have any cars on it
+    if (cars.size() == 0) return true;
+    float a = cars.get(cars.size() - 1).alpha;
+    return a * length() > dist;
+  }
+  
 }

@@ -11,11 +11,15 @@ class World {
     globalCars = new ArrayList<Car>();
   }    
     
-  void createCar(Segment s, float alpha) {      
+  Car createCar(Segment s, float alpha) {      
     Car newCar = new Car();
     globalCars.add(newCar);
-    Utils.addCar(s, newCar);
-    newCar.alpha = alpha;
+    s.addCar(newCar, alpha);
+    return newCar;
+  }
+  
+  Car createCar() {
+    return createCar(globalSegments.get((int)random(globalSegments.size())), random(1));
   }
   
   void removeCar(Car c) {
@@ -109,17 +113,15 @@ class World {
   }
   
   void draw(boolean editMode) {
+    for (Junction j : globalJunctions) {
+      j.draw(editMode);
+    }
     for(Segment s : globalSegments) {
       s.draw(editMode);
       if(!paused) s.step();
     }
-    
     for(Car c : globalCars) {
       c.draw(editMode);
-    }
-  
-    for (Junction j : globalJunctions) {
-      j.draw(editMode);
     }
   }
   

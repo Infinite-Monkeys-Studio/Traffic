@@ -4,6 +4,7 @@ class Car {
   float alpha; // percent of distance along segment
   float rate;
   Driver driver;
+  String db;
   
   Car() {
     this(color(random(0,255), random(0,255), random(0,255)), null, 0, 0);
@@ -26,6 +27,11 @@ class Car {
   int index() {
     return s.cars.indexOf(this);
   }
+  
+  int id() {
+    return world.globalCars.indexOf(this);
+  }
+
  
   void draw(boolean editmode) {
     strokeWeight(.5);
@@ -41,7 +47,7 @@ class Car {
       rotate(-heading);
       //textSize(14);
       fill(0);
-      text(index(),0,0);
+      text(id() + " " + db,0,0);
     }
     popMatrix();
   }
@@ -51,12 +57,12 @@ class Car {
   }
    //<>//
   void step() {
-    alpha += rate / s.length; //advance    
+    alpha += rate / s.length(); //advance    
     rate = driver.step();
   }
   
   float positionOnRoad() {
-    return alpha * s.length;
+    return alpha * s.length();
   }
   
   Car copy() { // by value copy

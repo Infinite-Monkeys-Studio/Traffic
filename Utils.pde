@@ -1,56 +1,28 @@
 import java.util.Collections;
 
 
-  void drawChevron(PVector start, PVector end, float size) {
-    pushMatrix();
-    PVector h = PVector.add(end, start).div(2);
-    translate(h.x, h.y); // goto middle of line to put cheveron
-    rotate(PVector.sub(end, start).heading());
-    line(0, 0, -2*size, size);
-    line(0, 0, -2*size, -size);
-    popMatrix();
-  }
+void drawChevron(PVector start, PVector end, float size) {
+  pushMatrix();
+  PVector h = PVector.add(end, start).div(2);
+  translate(h.x, h.y); // goto middle of line to put cheveron
+  rotate(PVector.sub(end, start).heading());
+  line(0, 0, -2*size, size);
+  line(0, 0, -2*size, -size);
+  popMatrix();
+}
+
+
+color rainbow(int n) {
+  // returns 12 colors of the rainbow, 0=red, 4=green, 8=blue
+  float[] t = {51,0,0,0,51,102,153,204,255,204,153,102,51,0,0,0,51,102,153,204};
+  if (n == 12) return color(255);
+  int m = Math.abs(n) % 12;
+  return color(t[m+8],t[m+4],t[m]);
+}
 
 
 
-static class Utils {
-  //add OR MOVE a car to a new road.
-  static void addCar(Segment s, Car c) {
-    if (c.s != null) removeCar(c.s, c);//take the car off the old road
-    insertByOrder(c, s.cars); //put it on the new road
-    c.s = s; //tell the car what road he's on
-  }
-
-  // add the car to the list in a sorted way.
-  // the car with the biggest alpha is the 0th car
-  static void insertByOrder(Car c, ArrayList<Car> list) {
-    if (list.size() == 0) {
-      list.add(c); 
-      return;
-    } // put the first item if list is empty
-    for (int i = 0; i < list.size(); i++) {
-      if (c.alpha > list.get(i).alpha) {
-        list.add(i, c);
-        return;
-      }
-    }
-    list.add(c);
-  }
-
-
-  //Takes a car off a road.
-  static void removeCar(Segment s, Car c) {
-    s.cars.remove(c);
-  }
-  
-  //TODO remove cars from all lists. global, and segments
-  static void deleteCar(Car c) {
-    removeCar(c.s, c);
-  }
-  
-  //true if the dist between is less than or equal to dist
-  static boolean isVectorNear(PVector v1, PVector v2, float dist) {
-    return v1.dist(v2) <= dist;
-  }
-
+//true if the dist between is less than or equal to dist
+boolean isVectorNear(PVector v1, PVector v2, float dist) {
+  return v1.dist(v2) <= dist;
 }

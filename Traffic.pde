@@ -18,9 +18,7 @@ void setup() {
   surface.setResizable(true);
   viewPortVec = new PVector(0, 0);
   viewZoom = 1;
-  world = new World();
-  createTestSegments();
-  createTestCars();
+  createTest4();
 }
 
 
@@ -65,7 +63,10 @@ void keyTyped() {
       world.removeSegment(world.nearestSegment(mv));
       break;
     case 'q': oneway = !oneway; break;
-    case '1':case '2':case '3': numlanes = Character.getNumericValue(k); break;
+    case '1':case '2':case '3': 
+      numlanes = Character.getNumericValue(k); break;
+    case '4': createTest4(); break;
+    case '5': createTest5(); break;
     case '/': case '?':
       helpMode = !helpMode; break;
   }
@@ -84,6 +85,7 @@ void drawHelp() {
     "g - add car at mouse location",
     "r - remove car",
     "t - remove road segment",
+    "45.. - load test scenario",
     "? - show help",
     "Esc - exit",
     "", 
@@ -142,7 +144,6 @@ void mouseReleased() {
   if(editMode) {
     if(newSegment != null) { //make sure we are making a segment
       newSegment.end = mouseVector();
-      newSegment.refresh(); // have to refresh to calculate new length
       world.addSegment(newSegment, oneway, numlanes);
       Road r = new Road(newSegment);
       r.rebutBothEnds();
@@ -172,37 +173,38 @@ void mouseZoom() {
 }
 
 
-void createTestCars() {
-  Car test = new Car();
-  //test.driver.naturalSpeed -= .5;
-  // TODO  -- this is ugly!  combine next two lines into single world method.
-  world.globalCars.add(test);
-  Utils.addCar(world.globalSegments.get(1), test);
-
-  float l = world.globalSegments.get(0).length;
-  for(int i = 0; i < 4; i++) {
-    Car c = new Car();
-    c.alpha = ((i*55)/l);
-    world.globalCars.add(c);    
-    Utils.addCar(world.globalSegments.get(0), c);   
+void createTestCars(int m) {
+  for(int i = 0; i < m; i++) {
+    world.createCar();
   } 
 }
 
-void createTestSegments() {
+void createTest5() {
+  world = new World();
   boolean w=false; int n=1;
   PVector a = new PVector(-200, -200);
   PVector b = new PVector(-200, 200);
-  PVector c = new PVector(200, 200); //<>//
+  world.addSegment(new Segment(a, b), w, n);
+  createTestCars(8);
+}
+
+void createTest4() {
+  world = new World();
+  boolean w=false; int n=2;
+  PVector a = new PVector(-200, -200);
+  PVector b = new PVector(-200, 200);
+  PVector c = new PVector(200, 200);
   PVector d = new PVector(200, -200);
   world.addSegment(new Segment(a, b), w, n);
-//  world.addSegment(new Segment(b, c), w, n); //<>//
-//  world.addSegment(new Segment(c, d), w, n);
-//  world.addSegment(new Segment(d, a), w, n);
+  world.addSegment(new Segment(b, c), w, n);
+  world.addSegment(new Segment(c, d), w, n);
+  world.addSegment(new Segment(d, a), w, n);
+  createTestCars(100);
   
   //for(Junction j:world.globalJunctions) println(j.pos);
 }
 
-// corrects for screen pan and zoom
+// corrects for screen pan and zoom //<>// //<>//
 PVector mouseVector() {
   return PVector.sub(new PVector(mouseX - width/2, mouseY - height/2).mult(1 / viewZoom), viewPortVec);
 }

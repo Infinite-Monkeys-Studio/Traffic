@@ -53,7 +53,14 @@ class Junction {
     }
   }
 
-  ArrayList<Segment> openStarters(Segment ender) {
-    return starters;
+
+  ArrayList<Segment> openStarters(Segment ender, float dist) {
+    ArrayList<Segment> temp = new ArrayList<Segment>();
+    for (Segment s: starters) {
+      if (s.isClear(dist)) temp.add(s);
+    }
+    return temp;
   }
+  
+  
 }

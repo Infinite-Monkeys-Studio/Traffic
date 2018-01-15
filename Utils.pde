@@ -26,3 +26,18 @@ color rainbow(int n) {
 boolean isVectorNear(PVector v1, PVector v2, float dist) {
   return v1.dist(v2) <= dist;
 }
+
+
+
+// Ensure a is between -pi and +pi, add multiples of 2*pi
+float fixAngle(float a) {
+  float pi = 3.1415926;
+  while (a < -pi) a += 2*pi;
+  while (a > pi) a -= 2*pi;
+  return a;
+}
+
+// Given b>0, this ensures a is between -b and +b
+float clamp(float a, float b) {
+  return a > b ? b : a < -b ? -b : a;
+}

@@ -32,31 +32,38 @@ class Driver {
     if(myCar.alpha > 1) {
       Segment s = findNewRoad();
       if (s == null) return 0;
-      s.addCar(myCar, 0);
+      s.addCar(myCar);
       return 0;
     }
     
     int myIndex = myCar.index();
     float safeSpeed;
-    myCar.db = "("+myIndex+") ";
     if(myIndex > 0) {
       // there is a car ahead of me
       Car carAhead = myCar.s.cars.get(myIndex - 1);
-      float distanceToObject = carAhead.positionOnRoad() - myCar.positionOnRoad();
-      myCar.db += carAhead.id() + " " + distanceToObject;
-
+      float distanceToObject = carAhead.positionOnRoad() - myCar.positionOnRoad() - 25;
 
       safeSpeed = naturalSpeed;
-      if (distanceToObject < 40) {
-        safeSpeed = Math.min(safeSpeed, carAhead.rate - 1);
-      }
-        
+      float safeDistance = 40;
+      float slowdown = distanceToObject / safeDistance;
+      if (slowdown < 1 && carAhead.rate < naturalSpeed) {
+        safeSpeed = naturalSpeed * slowdown + carAhead.rate * (1 - slowdown);
+      } //<>//
+    } else {
+      // I am the lead car
+      safeSpeed = naturalSpeed;
+    }
+    
+    return safeSpeed;
+  }
+  
+  
       
       /****
       float Vm = myCar.rate;
       float Vt = carAhead.rate;
       float followingDist = followingTime * Vt;
-      float dist = distanceToObject - followingDist; //<>//
+      float dist = distanceToObject - followingDist;
       if(dist < 0) dist = 0;
       
       float acc = (sq(Vm) - sq(Vt)) / (2*dist); 
@@ -70,16 +77,9 @@ class Driver {
       
       ****/
       
-    } else {
-      // I am the lead car
-      safeSpeed = naturalSpeed;
-    }
-    
-    return safeSpeed;
-  }
   
   Segment findNewRoad() {
-    ArrayList<Segment> openSegs = myCar.s.endjun.openStarters(myCar.s, 40);
+    ArrayList<Segment> openSegs = myCar.s.endjun.openStarters(myCar.s, 25);
     if (openSegs.size() == 0) return null;
     return openSegs.get((int)random(openSegs.size()));
   }

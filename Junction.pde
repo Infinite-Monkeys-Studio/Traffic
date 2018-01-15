@@ -14,6 +14,11 @@ class Junction {
   Junction(PVector p) {
     this(p, 30);
   }
+  
+  void resizeRadius() {
+    int n = enders.size() + starters.size();
+    radius = Math.max(40, n * 10);
+  }
 
   Segment addStarter(Segment s) {
     s.startjun = this;

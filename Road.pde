@@ -49,7 +49,7 @@ class Road {
     PVector axis = PVector.sub(startjun[1-a].pos, p).normalize();
     PVector perp = new PVector(axis.y, -axis.x).mult(lanesize * 2 * (0.5 - a));
     p.add(axis.mult(0.72 * startjun[a].radius));
-    p.sub(PVector.mult(perp, (n - 1)*0.5 + 1)); //<>//
+    p.sub(PVector.mult(perp, (n - 1)*0.5 + 1));
     for (Segment s: list[0]) {
       (a==0 ? s.start : s.end).set(p.add(perp).copy());
     }
@@ -59,6 +59,8 @@ class Road {
   }
   
   void rebutBothEnds() {
+    startjun[0].resizeRadius();
+    startjun[1].resizeRadius();
     rebut(0);
     rebut(1);
   }  

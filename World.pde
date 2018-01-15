@@ -13,6 +13,8 @@ class World {
     
   Car createCar(Segment s, float alpha) {      
     Car newCar = new Car();
+    newCar.pos = s.axis().mult(alpha).add(s.start);
+    newCar.heading = s.axis().heading();
     globalCars.add(newCar);
     s.addCar(newCar, alpha);
     return newCar;

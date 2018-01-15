@@ -4,7 +4,11 @@ class Car {
   float alpha; // percent of distance along segment
   float rate;
   Driver driver;
-  String db;
+  boolean tooClose;    // the car is too close to the one in front of it
+  PVector pos;        // this is to draw the graphics
+  float heading;
+  int easeLen;       // this is to ease the car (graphics) onto the next segment
+  int easeIn;
   
   Car() {
     this(color(random(0,255), random(0,255), random(0,255)), null, 0, 0);
@@ -22,6 +26,9 @@ class Car {
     this.rate = rate;
     this.driver = driver;
     driver.link(this);
+    this.pos = new PVector();
+    this.heading = random(-3.14, 3.14);
+    this.easeLen = 0;
   }
  
   int index() {
@@ -38,16 +45,14 @@ class Car {
     stroke(0);
     if (editmode) noFill(); else fill(c);
     pushMatrix();
-    PVector p = location();
-    float heading = PVector.sub(s.end, s.start).heading();
+    PVector p = pos;
     translate(p.x, p.y);
     rotate(heading);    
     rect(-10, -4, 20, 8);
     if (editmode) {
       rotate(-heading);
-      //textSize(14);
       fill(0);
-      text(id() + " " + db,0,0);
+      text(id() + " " + index(),0,0);
     }
     popMatrix();
   }
@@ -57,8 +62,37 @@ class Car {
   }
    //<>//
   void step() {
-    alpha += rate / s.length(); //advance    
-    rate = driver.step();
+    tooClose = collisionDetection();
+    if (!tooClose) {
+      rate = driver.step();
+      alpha += rate / s.length(); //advance    
+    }
+    // Transition to merge car position and heading onto the segment:
+    
+    if (easeIn >= easeLen) {
+      pos = location();
+      heading = s.axis().heading();
+    } 
+    else {
+      float t = easeIn++ / (float) easeLen;    // always between 0 and 1
+      pos = PVector.lerp(pos, location(), t);
+      heading = (1-t) * heading + t * s.axis().heading();
+      
+      // TODO this flips the cars around funny sometimes
+    }
+  }
+  
+  boolean collisionDetection() {
+    int i = index();
+    if (i == 0) return false;
+    Car carAhead = s.cars.get(i - 1);
+    float safeAlpha = carAhead.alpha - 25 / s.length();
+    if (alpha < safeAlpha) return false;
+    float da = alpha - safeAlpha;
+    if (da > 2) da /= 2;
+    alpha -= da;  // backup the car to a safe distance
+    rate = carAhead.rate;
+    return true;
   }
   
   float positionOnRoad() {

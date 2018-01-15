@@ -18,7 +18,7 @@ void setup() {
   surface.setResizable(true);
   viewPortVec = new PVector(0, 0);
   viewZoom = 1;
-  createTest4();
+  createTest6();
 }
 
 
@@ -62,11 +62,15 @@ void keyTyped() {
     case 't':
       world.removeSegment(world.nearestSegment(mv));
       break;
+    case 'u':
+      new Road(world.nearestSegment(mv)).rebutBothEnds();
+      break;
     case 'q': oneway = !oneway; break;
     case '1':case '2':case '3': 
       numlanes = Character.getNumericValue(k); break;
     case '4': createTest4(); break;
     case '5': createTest5(); break;
+    case '6': createTest6(); break;
     case '/': case '?':
       helpMode = !helpMode; break;
   }
@@ -85,6 +89,7 @@ void drawHelp() {
     "g - add car at mouse location",
     "r - remove car",
     "t - remove road segment",
+    "u - rebut both ends of road",
     "45.. - load test scenario",
     "? - show help",
     "Esc - exit",
@@ -186,6 +191,19 @@ void createTest5() {
   PVector b = new PVector(-200, 200);
   world.addSegment(new Segment(a, b), w, n);
   createTestCars(8);
+}
+
+
+void createTest6() {
+  world = new World();
+  boolean w=true; int n=1;
+  PVector a = new PVector(-200, -200);
+  PVector b = new PVector(-200, 200);
+  PVector c = new PVector(200, 0);
+  world.addSegment(new Segment(a, b), w, n);
+  world.addSegment(new Segment(b, c), w, n);
+  world.addSegment(new Segment(c, a), w, n);
+  createTestCars(2);
 }
 
 void createTest4() {

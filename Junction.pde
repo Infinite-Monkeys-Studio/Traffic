@@ -53,7 +53,7 @@ class Junction {
       fill(100);
       noStroke();
       ellipseMode(RADIUS);
-      float r = radius * 0.8;
+      float r = radius;
       ellipse(pos.x, pos.y, r, r);
     }
   }

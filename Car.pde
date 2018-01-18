@@ -7,8 +7,7 @@ class Car {
   boolean tooClose;    // the car is too close to the one in front of it
   PVector pos;        // this is to draw the graphics
   float heading;
-  int easeLen;       // this is to ease the car (graphics) onto the next segment
-  int easeIn;
+  int easeIn;       // this is to ease the car (graphics) onto the next segment
   
   Car() {
     this(color(random(0,255), random(0,255), random(0,255)), null, 0, 0);
@@ -28,7 +27,7 @@ class Car {
     driver.link(this);
     this.pos = new PVector();
     this.heading = random(-3.14, 3.14);
-    this.easeLen = 0;
+    this.easeIn = 0;
   }
  
   int index() {
@@ -69,12 +68,12 @@ class Car {
     }
     // Transition to merge car position and heading onto the segment:
     
-    if (easeIn >= easeLen) {
+    if (easeIn < 1) {
       pos = location();
       heading = s.axis().heading();
     } 
     else {
-      float t = easeIn++ / (float) easeLen;    // always between 0 and 1
+      float t = 1.0 / easeIn--;
       pos = PVector.lerp(pos, location(), t);
       heading = (1-t) * heading + t * s.axis().heading();
       

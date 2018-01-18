@@ -95,9 +95,8 @@ class Segment {
   void addCar(Car c) {
     // compute negative alpha (give the car time to get to the start)
     float d = c.pos.dist(start);
-    c.easeIn = 0;
-    c.easeLen = (int)(5 * d); 
-    addCar(c, -0.7 * d / length());
+    c.easeIn = (int) (30 / c.driver.naturalSpeed); 
+    addCar(c, -.4 * d / length());
   }
   
   // add the car to the list in a sorted way.

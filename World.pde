@@ -30,6 +30,13 @@ class World {
     c.s.cars.remove(c);
   }
   
+  // change natural speed of all the drivers
+  void driveSpeed(float f) {
+    for (Car c: globalCars) {
+      c.driver.naturalSpeed *= f;
+    }
+  }
+  
   // The input to this function is a segment with start/end set, but nothing else
   // This will find which start/end JUNCTIONS  it belongs to, and attach them
   // also it will add extra lanes.

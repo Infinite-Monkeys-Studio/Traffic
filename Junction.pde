@@ -50,11 +50,13 @@ class Junction {
         drawChevron(pos, s.start, 3);
       }
     } else {           // NON EDIT MODE
-      fill(100);
+      fill(90);
       noStroke();
       ellipseMode(RADIUS);
-      float r = radius;
+      float r = 1.3 * radius;
       ellipse(pos.x, pos.y, r, r);
+      fill(100);
+      ellipse(pos.x, pos.y, radius, radius);
     }
   }
 

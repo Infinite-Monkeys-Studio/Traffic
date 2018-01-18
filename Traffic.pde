@@ -18,13 +18,13 @@ void setup() {
   surface.setResizable(true);
   viewPortVec = new PVector(0, 0);
   viewZoom = 1;
-  createTest6();
+  createTest4();
 }
 
 
 void draw() {
   background(#1D8309);
-  drawHelp();
+  pushMatrix();
   translate(width/2, height/2);  // this is so the zoom is at the center
   scale(viewZoom);
   translate(viewPortVec.x, viewPortVec.y);
@@ -37,7 +37,8 @@ void draw() {
     }
   }
   world.draw(editMode);
-  
+  popMatrix();
+  drawHelp();  
 }
 
 void keyTyped() {
@@ -65,6 +66,8 @@ void keyTyped() {
     case 'u':
       new Road(world.nearestSegment(mv)).rebutBothEnds();
       break;
+    case '[': world.driveSpeed(1/1.1); break;
+    case ']': world.driveSpeed(1.1); break;
     case 'q': oneway = !oneway; break;
     case '1':case '2':case '3': 
       numlanes = Character.getNumericValue(k); break;
@@ -86,6 +89,7 @@ void drawHelp() {
     "zx - zoom the world",
     "e - edit mode",
     "p - pause simulation",
+    "[ ] - slower/faster drivers",
     "g - add car at mouse location",
     "r - remove car",
     "t - remove road segment",
@@ -116,7 +120,7 @@ void drawHelp() {
 }
 
 void keyPressed() {
-  println(keyCode);
+  //println(keyCode);
   keyList[keyCode&255] = true;
 }
 
@@ -217,7 +221,7 @@ void createTest4() {
   world.addSegment(new Segment(b, c), w, n);
   world.addSegment(new Segment(c, d), w, n);
   world.addSegment(new Segment(d, a), w, n);
-  createTestCars(100);
+  createTestCars(50);
   
   //for(Junction j:world.globalJunctions) println(j.pos);
 }

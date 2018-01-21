@@ -75,9 +75,8 @@ class Car {
     else {
       float t = 1.0 / easeIn--;
       pos = PVector.lerp(pos, location(), t);
-      heading = (1-t) * heading + t * s.axis().heading();
-      
-      // TODO this flips the cars around funny sometimes
+      float h = fixAngle(s.axis().heading() - heading);
+      heading += t * h;
     }
   }
   

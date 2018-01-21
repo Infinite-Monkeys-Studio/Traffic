@@ -18,7 +18,7 @@ void setup() {
   surface.setResizable(true);
   viewPortVec = new PVector(0, 0);
   viewZoom = 1;
-  createTest4();
+  createTest5();
 }
 
 

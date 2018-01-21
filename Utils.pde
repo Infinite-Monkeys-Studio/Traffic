@@ -37,6 +37,15 @@ float fixAngle(float a) {
   return a;
 }
 
+
+// Ensure a is between 0 and sign * pi
+float fixAngle(float a, float sign) {
+  float x = 2 * 3.1415926;
+  while (sign * a < 0) a += sign * x;
+  while (sign * a > x) a -= sign * x;
+  return a;
+}
+
 // Given b>0, this ensures a is between -b and +b
 float clamp(float a, float b) {
   return a > b ? b : a < -b ? -b : a;

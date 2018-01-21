@@ -35,7 +35,7 @@ class Car {
   }
   
   int id() {
-    return world.globalCars.indexOf(this);
+    return world.getid(this);
   }
 
  
@@ -74,8 +74,14 @@ class Car {
     } 
     else {
       float t = 1.0 / easeIn--;
-      pos = PVector.lerp(pos, location(), t);
-      float h = fixAngle(s.axis().heading() - heading);
+      PVector a2 = s.axis();  // where i want to point
+      PVector p2 = location(); // where i want to be
+      //PVector p3 = PVector.add(p2, PVector.mult(a2, easeIn));
+      float offcenter = PVector.fromAngle(heading + 1.5708).dot(PVector.sub(p2, pos));
+      pos = PVector.lerp(pos, p2, t);
+      float h = a2.heading() - heading;
+      if (Math.abs(offcenter) < 10) h = fixAngle(h);
+      else  h = fixAngle(h, Math.signum(offcenter));
       heading += t * h;
     }
   }

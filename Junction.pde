@@ -3,6 +3,7 @@ class Junction {
   private ArrayList<Segment> starters;
   PVector pos;
   float radius;
+  boolean seen;   // temp flag to avoid infinite loops while walking the graph
 
   Junction(PVector p, float r) {
     pos = p.copy(); 
@@ -15,11 +16,6 @@ class Junction {
     this(p, 30);
   }
   
-  void resizeRadius() {
-    int n = enders.size() + starters.size();
-    radius = Math.max(40, n * 10);
-  }
-
   Segment addStarter(Segment s) {
     s.startjun = this;
     starters.add(s);
@@ -66,6 +62,15 @@ class Junction {
     for (Segment s: starters) {
       if (s.isClear(dist)) temp.add(s);
     }
+    return temp;
+  }
+  
+  ArrayList<Junction> neighbors() {
+    ArrayList<Junction> temp = new ArrayList<Junction>();
+    for (Segment s: starters) 
+      if (!temp.contains(s.endjun)) temp.add(s.endjun);
+    for (Segment e: enders) 
+      if (!temp.contains(e.startjun)) temp.add(e.startjun);
     return temp;
   }
   

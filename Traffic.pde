@@ -14,11 +14,11 @@ Segment newSegment;
 World world;
 
 void setup() {
-  size(800, 800);
+  size(1000, 800);
   surface.setResizable(true);
   viewPortVec = new PVector(0, 0);
   viewZoom = 1;
-  createTest5();
+  createTest6();
 }
 
 
@@ -200,14 +200,27 @@ void createTest5() {
 
 void createTest6() {
   world = new World();
-  boolean w=true; int n=1;
-  PVector a = new PVector(-200, -200);
-  PVector b = new PVector(-200, 200);
-  PVector c = new PVector(200, 0);
+  boolean w=false; int n=3;
+  // use the z=2.5 to make the junctions a little bigger
+  PVector a = new PVector(0, 400, 2.5);
+  PVector b = new PVector(400, 400, 2.5);
+  PVector c = new PVector(-400, 0, 2.5);
+  PVector d = new PVector(0, 0, 2.5);
+  PVector e = new PVector(400, 0);
+  PVector f = new PVector(0, -400);
+  PVector g = new PVector(400, -400, 2.5);
   world.addSegment(new Segment(a, b), w, n);
-  world.addSegment(new Segment(b, c), w, n);
-  world.addSegment(new Segment(c, a), w, n);
-  createTestCars(2);
+  world.addSegment(new Segment(a, c), w, n);
+  world.addSegment(new Segment(a, d), w, n);
+  world.addSegment(new Segment(b, d), w, n);
+  world.addSegment(new Segment(b, e), w, n);
+  world.addSegment(new Segment(c, d), w, n);
+  world.addSegment(new Segment(d, e), w, n);
+  world.addSegment(new Segment(d, f), w, n);
+  world.addSegment(new Segment(d, g), w, n);
+  world.addSegment(new Segment(e, g), w, n);
+  world.addSegment(new Segment(f, g), w, n);
+  createTestCars(200);
 }
 
 void createTest4() {
@@ -226,7 +239,7 @@ void createTest4() {
   //for(Junction j:world.globalJunctions) println(j.pos);
 }
 
-// corrects for screen pan and zoom //<>// //<>//
+// corrects for screen pan and zoom //<>//
 PVector mouseVector() {
   return PVector.sub(new PVector(mouseX - width/2, mouseY - height/2).mult(1 / viewZoom), viewPortVec);
 }

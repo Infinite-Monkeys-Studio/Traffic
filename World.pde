@@ -1,38 +1,42 @@
 
 class World {
   
-  ArrayList<Car> globalCars;
-  ArrayList<Segment> globalSegments;
-  ArrayList<Junction> globalJunctions;  // todo these should be private
+  private ArrayList<Car> carList;
+  private ArrayList<Segment> segList;
+  private ArrayList<Junction> junList;
 
   World() {
-    globalSegments = new ArrayList<Segment>();
-    globalJunctions = new ArrayList<Junction>();
-    globalCars = new ArrayList<Car>();
+    segList = new ArrayList<Segment>();
+    junList = new ArrayList<Junction>();
+    carList = new ArrayList<Car>();
   }    
     
   Car createCar(Segment s, float alpha) {      
     Car newCar = new Car();
     newCar.pos = s.axis().mult(alpha).add(s.start);
     newCar.heading = s.axis().heading();
-    globalCars.add(newCar);
+    carList.add(newCar);
     s.addCar(newCar, alpha);
     return newCar;
   }
   
+  int getid(Car c) {
+    return carList.indexOf(c);
+  }
+  
   Car createCar() {
-    return createCar(globalSegments.get((int)random(globalSegments.size())), random(1));
+    return createCar(segList.get((int)random(segList.size())), random(1));
   }
   
   void removeCar(Car c) {
     if (c == null) return;
-    globalCars.remove(c);
+    carList.remove(c);
     c.s.cars.remove(c);
   }
   
   // change natural speed of all the drivers
   void driveSpeed(float f) {
-    for (Car c: globalCars) {
+    for (Car c: carList) {
       c.driver.naturalSpeed *= f;
     }
   }
@@ -41,20 +45,22 @@ class World {
   // This will find which start/end JUNCTIONS  it belongs to, and attach them
   // also it will add extra lanes.
   void addSegment(Segment newSegment, boolean oneway, int numlanes) {
-    globalSegments.add(newSegment);
-    float r = lanesize * numlanes * (oneway?1:2) * 0.8;
+    segList.add(newSegment);
+    float r = lanesize * numlanes * (oneway?1:2) * 0.5;
     if (newSegment.startjun == null) {
       Junction j1 = nearestJunction(newSegment.start);
       if (j1 == null) {
-        j1 = new Junction(newSegment.start, r);
-        globalJunctions.add(j1);
+        float z = newSegment.start.z < .01 ? 1.0 : newSegment.start.z;
+        j1 = new Junction(newSegment.start, r * z);
+        junList.add(j1);
       }
       j1.addStarter(newSegment);
     }
     Junction j2 = nearestJunction(newSegment.end);
     if (j2 == null || j2 == newSegment.startjun) {
-      j2 = new Junction(newSegment.end, r);
-      globalJunctions.add(j2);
+      float z = newSegment.end.z < .01 ? 1.0 : newSegment.end.z;
+      j2 = new Junction(newSegment.end, r * z);
+      junList.add(j2);
     }
     j2.addEnder(newSegment);
       
@@ -75,7 +81,7 @@ class World {
   
   Junction addJunction(PVector v) {
     Junction j = new Junction(v);
-    globalJunctions.add(j);
+    junList.add(j);
     return j;
   }
   
@@ -96,7 +102,7 @@ class World {
 
   Segment addSegment(PVector a, PVector b, Junction c, Junction d) {
     Segment seg = new Segment(a, b);
-    globalSegments.add(seg);
+    segList.add(seg);
     c.addStarter(seg);
     d.addEnder(seg);
     return seg;
@@ -104,32 +110,32 @@ class World {
   
   void removeSegment(Segment s1) {
     if (s1 == null) return;
-    for (Car c1:s1.cars) globalCars.remove(c1);
+    for (Car c1:s1.cars) carList.remove(c1);
     if (s1.leftside != null) s1.leftside.rightside = null;
     if (s1.rightside != null) s1.rightside.leftside = null;
     s1.endjun.enders.remove(s1);
     s1.startjun.starters.remove(s1);
     removeIfEmpty(s1.endjun);
     removeIfEmpty(s1.startjun);
-    globalSegments.remove(s1);
+    segList.remove(s1);
   }
 
 
   void removeIfEmpty(Junction j) {
     if (j.enders.size() == 0 && j.starters.size() == 0) {
-      globalJunctions.remove(j);
+      junList.remove(j);
     }
   }
   
   void draw(boolean editMode) {
-    for (Junction j : globalJunctions) {
+    for (Junction j : junList) {
       j.draw(editMode);
     }
-    for(Segment s : globalSegments) {
+    for(Segment s : segList) {
       s.draw(editMode);
       if(!paused) s.step();
     }
-    for(Car c : globalCars) {
+    for(Car c : carList) {
       c.draw(editMode);
     }
   }
@@ -139,7 +145,7 @@ class World {
   Car nearestCar(PVector p) {
     float dist = 1e9;
     Car car = null;
-    for(Car c : globalCars) {
+    for(Car c : carList) {
       float td = c.location().dist(p);
       if (car == null || td < dist){
         dist = td;
@@ -152,7 +158,7 @@ class World {
   Segment nearestSegment(PVector p) {
     float dist = 1e9;
     Segment seg = null;
-    for(Segment s : globalSegments) {
+    for(Segment s : segList) {
       float td = s.distanceToPoint(p);
       if(seg == null || td < dist){
         dist = td;
@@ -168,7 +174,7 @@ class World {
   
   Junction nearestJunction(PVector p, float dist) {
     Junction jun = null;
-    for(Junction j : globalJunctions) {
+    for(Junction j : junList) {
       float td = PVector.dist(j.pos, p);
       if(td < dist){
         dist = td;

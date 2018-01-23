@@ -25,6 +25,10 @@ class Segment {
     return PVector.sub(end, start);
   }
 
+  PVector location(float alpha) {
+    return PVector.lerp(start, end, alpha);
+  }
+  
 
   float length() {
     return PVector.dist(start, end);
@@ -72,7 +76,7 @@ class Segment {
   
   float nearestAlpha(PVector point) { 
     // returns the alpha 0..1 that is nearest to the point (such as mouse x y)
-    PVector axis = PVector.sub(end, start);
+    PVector axis = axis();
     float d = axis.dot(axis);
     if (d < 1e-5) return 0;
     return Math.min(1, Math.max(0, axis.dot(PVector.sub(point, start)) / d));
@@ -80,24 +84,22 @@ class Segment {
   
   float distanceToPoint(PVector point) {  // return distance from segment to the point
     float a = nearestAlpha(point);
-    PVector axis = PVector.sub(end, start);
+    PVector axis = axis();
     return point.dist(PVector.add(start, axis.mult(a)));
   }  
   
   //add OR MOVE a car to a new road.
   void addCar(Car c, float alpha) {
     if (c.s != null) c.s.cars.remove(c);//take the car off the old road
-    c.alpha = alpha;
+    float d = c.pos.dist(location(alpha));
+    c.snap = alpha;
+    c.alpha = c.snap - d / length();
     insertByOrder(c); //put it on the new road
-    c.s = this; //tell the car what road he's on
+    c.s = this;       //tell the car what road he's on
   }
 
   void addCar(Car c) {
-    // compute negative alpha (give the car time to get to the start)
-    float d = c.pos.dist(start);
-    float e = Math.max(d, 30);
-    c.easeIn = (int) (e / c.driver.naturalSpeed); 
-    addCar(c, -d / length());
+    addCar(c, 0);
   }
   
   // add the car to the list in a sorted way.

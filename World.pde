@@ -11,6 +11,18 @@ class World {
     carList = new ArrayList<Car>();
   }    
     
+    
+  Car createCar(PVector v) {
+    Segment s = nearestSegment(v);
+    if (s == null) return null;
+    Car newCar = new Car();
+    newCar.pos = v.copy();
+    newCar.heading = random(6.28);
+    carList.add(newCar);
+    s.addCar(newCar, s.nearestAlpha(v));
+    return newCar;
+  }
+  
   Car createCar(Segment s, float alpha) {      
     Car newCar = new Car();
     newCar.pos = s.axis().mult(alpha).add(s.start);
@@ -146,7 +158,7 @@ class World {
     float dist = 1e9;
     Car car = null;
     for(Car c : carList) {
-      float td = c.location().dist(p);
+      float td = c.pos.dist(p);
       if (car == null || td < dist){
         dist = td;
         car = c;

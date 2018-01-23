@@ -7,7 +7,7 @@ class Car {
   boolean tooClose;    // the car is too close to the one in front of it
   PVector pos;        // this is to draw the graphics
   float heading;
-  int easeIn;       // this is to ease the car (graphics) onto the next segment
+  float snap;   // this is to ease the car (graphics) onto the next segment
   
   Car() {
     this(color(random(0,255), random(0,255), random(0,255)), null, 0, 0);
@@ -27,7 +27,7 @@ class Car {
     driver.link(this);
     this.pos = new PVector();
     this.heading = random(-3.14, 3.14);
-    this.easeIn = 0;
+    this.snap = 0;
   }
  
   int index() {
@@ -56,11 +56,7 @@ class Car {
     popMatrix();
   }
   
-  PVector location() {
-    return PVector.lerp(s.start, s.end, alpha);
-  }
-   //<>//
-  void step() {
+  void step() { //<>//
     tooClose = collisionDetection();
     if (!tooClose) {
       rate = driver.step();
@@ -68,15 +64,15 @@ class Car {
     }
     // Transition to merge car position and heading onto the segment:
     
-    if (easeIn < 1) {
-      pos = location();
+    if (alpha >= snap) {
+      pos = s.location(alpha);
       heading = s.axis().heading();
     } 
     else {
-      float t = 1.0 / easeIn--;
-      PVector a2 = s.axis();  // where i want to point
-      PVector p2 = location(); // where i want to be
-      //PVector p3 = PVector.add(p2, PVector.mult(a2, easeIn));
+      float da = rate / s.length();      
+      float t = da / (da + 0.5 * (snap - alpha));
+      PVector a2 = s.axis();          // where i want to point
+      PVector p2 = s.location(alpha); // where i want to be
       float offcenter = PVector.fromAngle(heading + 1.5708).dot(PVector.sub(p2, pos));
       pos = PVector.lerp(pos, p2, t);
       float h = a2.heading() - heading;

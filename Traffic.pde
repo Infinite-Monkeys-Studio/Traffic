@@ -53,10 +53,11 @@ void keyTyped() {
       editMode = !editMode;
       paused = editMode;
       break;
-    case 'g': 
+    case 'g': // don't ease in
       Segment s = world.nearestSegment(mv);
       if (s != null) world.createCar(s, s.nearestAlpha(mv));
       break;
+    case 'f':   world.createCar(mv);   break;
     case 'r':
       world.removeCar(world.nearestCar(mv));
       break;

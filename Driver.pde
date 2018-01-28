@@ -24,9 +24,6 @@ class Driver {
     this.myCar = myCar;
   }
   
-  //float step(float distanceToObject, float speedOfObject) {
-  //  return naturalSpeed;
-  //}
   
   float step() {
     if(myCar.alpha > 1) {
@@ -48,35 +45,27 @@ class Driver {
       float slowdown = distanceToObject / safeDistance;
       if (slowdown < 1 && carAhead.rate < naturalSpeed) {
         safeSpeed = naturalSpeed * slowdown + carAhead.rate * (1 - slowdown);
+        // TRY TO CHANGE TO ANOTHER LANE        
+        if (!changeLane(myCar.s.leftside)) 
+          changeLane(myCar.s.rightside);
       } //<>//
-    } else {
+    } 
+    else {
       // I am the lead car
       safeSpeed = naturalSpeed;
     }
-    
     return safeSpeed;
   }
+
   
-  
-      
-      /****
-      float Vm = myCar.rate;
-      float Vt = carAhead.rate;
-      float followingDist = followingTime * Vt;
-      float dist = distanceToObject - followingDist;
-      if(dist < 0) dist = 0;
-      
-      float acc = (sq(Vm) - sq(Vt)) / (2*dist); 
-      
-      if(acc < 0 && myCar.rate > 0) { //abs(acc) > comfAcc) {
-        safeSpeed = myCar.rate + acc;
-        if(safeSpeed < 0) safeSpeed = 0;
-      } else {
-        safeSpeed = naturalSpeed;
-      }
-      
-      ****/
-      
+  boolean changeLane(Segment s) {
+    float a = myCar.alpha + 25 / s.length();
+    if (s != null && s.isClearAt(a, 40, 25)) {
+      s.addCar(myCar, a);
+      return true;
+    }        
+    return false;
+  }
   
   Segment findNewRoad() {
     ArrayList<Segment> openSegs = myCar.s.endjun.openStarters(myCar.s, 25);

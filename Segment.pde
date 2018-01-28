@@ -123,4 +123,14 @@ class Segment {
     return a * length() > dist;
   }
   
+  
+  boolean isClearAt(float alpha, float distBack, float distForward) {
+    // return true if the segment has no cars around "alpha"
+    if (cars.size() == 0) return true;
+    float a1 = alpha - distBack / length();
+    float a2 = alpha + distForward / length();
+    for (Car c: cars) if (c.alpha > a1 && c.alpha < a2) return false;
+    return true;
+  }
+  
 }

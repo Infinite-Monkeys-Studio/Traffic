@@ -7,8 +7,8 @@ class Car {
   boolean tooClose;    // the car is too close to the one in front of it
   PVector pos;        // this is to draw the graphics
   float heading;
-  float snap;   // this is to ease the car (graphics) onto the next segment
-  
+  float snap;     // When alpha < snap, we gradually ease the car (graphics) onto the segment
+
   Car() {
     this(color(random(0,255), random(0,255), random(0,255)), null, 0, 0);
     driver.naturalSpeed = random(1.2, 1.9);
@@ -69,13 +69,14 @@ class Car {
       heading = s.axis().heading();
     } 
     else {
-      float da = rate / s.length();      
-      float t = da / (da + 0.5 * (snap - alpha));
-      PVector a2 = s.axis();          // where i want to point
-      PVector p2 = s.location(alpha); // where i want to be
-      float offcenter = PVector.fromAngle(heading + 1.5708).dot(PVector.sub(p2, pos));
-      pos = PVector.lerp(pos, p2, t);
-      float h = a2.heading() - heading;
+      float alphaRate = rate / s.length();      
+      // The "t" is from 0..1 to merge onto the segment as the alpha gets closer to the snap.
+      float t = alphaRate / (alphaRate + 0.5 * (snap - alpha));
+      float desiredHeading = s.axis().heading();  // where i want to point
+      PVector desiredPos = s.location(alpha);     // where i want to be
+      float offcenter = PVector.fromAngle(heading + 1.5708).dot(PVector.sub(desiredPos, pos));
+      pos = PVector.lerp(pos, desiredPos, t);
+      float h = desiredHeading - heading;
       if (Math.abs(offcenter) < 10) h = fixAngle(h);
       else  h = fixAngle(h, Math.signum(offcenter));
       heading += t * h;

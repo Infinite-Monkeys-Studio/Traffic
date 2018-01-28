@@ -59,8 +59,9 @@ class Driver {
 
   
   boolean changeLane(Segment s) {
+    if (s == null) return false;
     float a = myCar.alpha + 25 / s.length();
-    if (s != null && s.isClearAt(a, 40, 25)) {
+    if (s.isClearAt(a, 40, 25)) {
       s.addCar(myCar, a);
       return true;
     }        

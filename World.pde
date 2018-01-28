@@ -145,13 +145,18 @@ class World {
     }
     for(Segment s : segList) {
       s.draw(editMode);
-      if(!paused) s.step();
     }
     for(Car c : carList) {
       c.draw(editMode);
     }
   }
   
+  
+  void step() {
+    for(Car c:carList) 
+      c.step();    
+  }
+
   
   
   Car nearestCar(PVector p) {

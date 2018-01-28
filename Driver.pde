@@ -46,8 +46,10 @@ class Driver {
       if (slowdown < 1 && carAhead.rate < naturalSpeed) {
         safeSpeed = naturalSpeed * slowdown + carAhead.rate * (1 - slowdown);
         // TRY TO CHANGE TO ANOTHER LANE        
-        if (!changeLane(myCar.s.leftside)) 
+        if (myCar.alpha > myCar.snap && !changeLane(myCar.s.leftside)) 
           changeLane(myCar.s.rightside);
+        // TODO -- better to look at the cars ahead and pick the best one to follow, 
+        // based on where I want to go, and which one is going my natural speed.
       } //<>//
     } 
     else {
@@ -61,7 +63,7 @@ class Driver {
   boolean changeLane(Segment s) {
     if (s == null) return false;
     float a = myCar.alpha + 25 / s.length();
-    if (s.isClearAt(a, 40, 25)) {
+    if (s.isClearAt(a, 70, 30)) {
       s.addCar(myCar, a);
       return true;
     }        

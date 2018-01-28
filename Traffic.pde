@@ -37,6 +37,7 @@ void draw() {
     }
   }
   world.draw(editMode);
+  if(!paused) world.step();
   popMatrix();
   drawHelp();  
 }

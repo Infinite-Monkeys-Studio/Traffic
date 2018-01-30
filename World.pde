@@ -200,4 +200,26 @@ class World {
     }
     return jun;
   }  
+  
+  boolean hasNeighbors(PVector p, float dist) {
+    for (Junction j : junList) {
+      float td = PVector.dist(j.pos, p);
+      if(td < dist) return true;
+    }
+    return false;
+  }
+  
+  
+  int connectToNeighbors(PVector p, float dist, boolean oneway, int numlanes) {
+    int i=0;
+    for (Junction j : junList) {
+      float td = PVector.dist(j.pos, p);
+      if(td < dist) {
+        Segment s = ((++i & 1) == 0) ? new Segment(p, j.pos):new Segment(j.pos, p);
+        addSegment(s, oneway, numlanes);
+      }
+    }
+    return i;
+  }
+  
 }

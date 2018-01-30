@@ -168,7 +168,6 @@ float wheelPos = 0;
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
   wheelPos += e < 0 ? -1 : e > 0 ? 1 : 0; //<>//
-  println(e);
 }
 
 void mouseZoom() {

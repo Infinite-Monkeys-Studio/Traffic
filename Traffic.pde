@@ -68,6 +68,9 @@ void keyTyped() {
     case 'u':
       new Road(world.nearestSegment(mv)).rebutBothEnds();
       break;
+    case 'i':
+      growRoads(400, oneway, numlanes);
+      break;
     case '[': world.driveSpeed(1/1.1); break;
     case ']': world.driveSpeed(1.1); break;
     case 'q': oneway = !oneway; break;

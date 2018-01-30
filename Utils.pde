@@ -57,7 +57,7 @@ int growRoads(float len, boolean oneway, int numlanes) {
   // direction starting at the origin until we find an empty area. create a junction
   // in that area. Then connect to any other nearby junctions.
   PVector p = findEmptyArea(len * .9);
-  return world.connectToNeighbors(p, len * 1.3, oneway, numlanes);
+  return world.connectToNeighbors(p, len * 1.5, oneway, numlanes);
 }
 
 PVector findEmptyArea(float r) {

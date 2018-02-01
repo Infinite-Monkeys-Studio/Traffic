@@ -74,5 +74,19 @@ class Junction {
     return temp;
   }
   
+  void rebut() {
+    ArrayList<Junction> temp = new ArrayList<Junction>();
+    for (Segment s: starters) 
+      if (!temp.contains(s.endjun)) {
+        temp.add(s.endjun);
+        new Road(s).rebutBothEnds();
+      }
+    for (Segment e: enders) 
+      if (!temp.contains(e.startjun)) {
+        temp.add(e.startjun);
+        new Road(e).rebutBothEnds();
+      }
+  }
+  
   
 }

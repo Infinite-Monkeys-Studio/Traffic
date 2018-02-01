@@ -6,7 +6,7 @@ boolean[] keyList = new boolean[256];
 boolean paused = false;
 boolean editMode = false;
 boolean helpMode = false;
-boolean oneway = true;
+boolean oneway = false;
 int numlanes = 1;
 float lanesize = 11;
 
@@ -58,21 +58,15 @@ void keyTyped() {
       Segment s = world.nearestSegment(mv);
       if (s != null) world.createCar(s, s.nearestAlpha(mv));
       break;
-    case 'f':   world.createCar(mv);   break;
-    case 'r':
-      world.removeCar(world.nearestCar(mv));
-      break;
-    case 't':
-      world.removeSegment(world.nearestSegment(mv));
-      break;
-    case 'u':
-      new Road(world.nearestSegment(mv)).rebutBothEnds();
-      break;
-    case 'i':
-      growRoads(400, oneway, numlanes);
-      break;
+    case 'f':  world.createCar(mv);   break;
+    case 'r':  world.removeCar(world.nearestCar(mv));     break;
+    case 't':  world.removeSegment(world.nearestSegment(mv));    break;
+    case 'u': new Road(world.nearestSegment(mv)).rebutBothEnds();  break;
+    case 'i': growRoads(400, oneway, numlanes); break;
     case '[': world.driveSpeed(1/1.1); break;
     case ']': world.driveSpeed(1.1); break;
+    case 'j': world.resizeJunction(mv,1.1); break;
+    case 'J': world.resizeJunction(mv,1/1.1); break;
     case 'q': oneway = !oneway; break;
     case '1':case '2':case '3': 
       numlanes = Character.getNumericValue(k); break;
@@ -99,6 +93,8 @@ void drawHelp() {
     "r - remove car",
     "t - remove road segment",
     "u - rebut both ends of road",
+    "i - add random road",
+    "jJ - change radius of junction",
     "45.. - load test scenario",
     "? - show help",
     "Esc - exit",

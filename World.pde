@@ -177,12 +177,21 @@ class World {
     Segment seg = null;
     for(Segment s : segList) {
       float td = s.distanceToPoint(p);
-      if(seg == null || td < dist){
+      if(seg == null || td < dist) {
         dist = td;
         seg = s;
       }
     }
     return seg;
+  }
+  
+  // find junction nearest to p and then multiply size by f
+  void resizeJunction(PVector p, float f) {
+    Junction j = nearestJunction(p,200);
+    if (j != null) {
+      j.radius *= f;
+      j.rebut();
+    }
   }
   
   Junction nearestJunction(PVector p) {
@@ -211,10 +220,10 @@ class World {
   
   
   ArrayList<PVector> getNeighbors(PVector p, float dist, float grow) {
-    ArrayList<PVector> result = new ArrayList<PVector>();
+    ArrayList<PVector> result = new ArrayList<PVector>(); //<>//
     while (result.size() < 1) {
       for (Junction j : junList) {
-        float td = PVector.dist(j.pos, p);
+        float td = PVector.dist(j.pos, p); //<>//
         if(td < dist) result.add(j.pos);
       }
       if (grow < 1.001) break;
@@ -226,11 +235,8 @@ class World {
   int connectToNeighbors(PVector p, float dist, boolean oneway, int numlanes) {
     int i=0;
     for (PVector q : getNeighbors(p, dist, 1.1)) {
-      float td = PVector.dist(q, p);
-      if(td < dist) {
-        Segment s = ((++i & 1) == 0) ? new Segment(p, q):new Segment(q, p);
-        addSegment(s, oneway, numlanes);
-      }
+      Segment s = ((++i & 1) == 0) ? new Segment(p, q):new Segment(q, p);
+      addSegment(s, oneway, numlanes);
     }
     return i;
   }

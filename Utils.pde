@@ -56,15 +56,25 @@ int growRoads(float len, boolean oneway, int numlanes) {
   // THis is a wierd algorithm to organicly grow the network of roads. First walk in a random
   // direction starting at the origin until we find an empty area. create a junction
   // in that area. Then connect to any other nearby junctions.
-  PVector p = findEmptyArea(len * .9);
-  return world.connectToNeighbors(p, len * 1.5, oneway, numlanes);
+  PVector p = findEmptyArea(len);
+  return world.connectToNeighbors(p, len * 1.1, oneway, numlanes);
 }
 
 PVector findEmptyArea(float r) {
-  PVector p = new PVector();
-  PVector s = PVector.random2D().mult(1.5*r);
-  while (world.hasNeighbors(p, r)) {
+  float w = 0.05;   // randomness
+  PVector p = new PVector(random(-r*w, r*w), random(-r*w, r*w));
+  PVector s = new PVector(r,0);
+  int i = 0;
+  int n = 0;
+  while (world.hasNeighbors(p, r * .8)) {
+    //println(" = "+p.x+" "+p.y+"    ,   " + s.x + "  " + s.y);
     p.add(s);
+    // The following is a square spiral walk
+    if (++i > n) {
+      i = 0;
+      s.set(-s.y, s.x);
+      if (Math.abs(s.y) < .1) n += 1;
+    }    
   }
   return p;
 }

@@ -57,11 +57,12 @@ class Car {
   }
   
   void step() { //<>//
+    rate = driver.step();
     tooClose = collisionDetection();
     if (!tooClose) {
-      rate = driver.step();
-      alpha += rate / s.length(); //advance    
+      alpha += rate / s.length();     //advance    
     }
+    
     // Transition to merge car position and heading onto the segment:
     
     if (alpha >= snap) {

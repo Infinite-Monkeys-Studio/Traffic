@@ -145,13 +145,18 @@ class World {
     }
     for(Segment s : segList) {
       s.draw(editMode);
-      if(!paused) s.step();
     }
     for(Car c : carList) {
       c.draw(editMode);
     }
   }
   
+  
+  void step() {
+    for(Car c:carList) 
+      c.step();    
+  }
+
   
   
   Car nearestCar(PVector p) {
@@ -195,4 +200,39 @@ class World {
     }
     return jun;
   }  
+  
+  boolean hasNeighbors(PVector p, float dist) {
+    for (Junction j : junList) {
+      float td = PVector.dist(j.pos, p);
+      if(td < dist) return true;
+    }
+    return false;
+  }
+  
+  
+  ArrayList<PVector> getNeighbors(PVector p, float dist, float grow) {
+    ArrayList<PVector> result = new ArrayList<PVector>();
+    while (result.size() < 1) {
+      for (Junction j : junList) {
+        float td = PVector.dist(j.pos, p);
+        if(td < dist) result.add(j.pos);
+      }
+      if (grow < 1.001) break;
+      dist *= grow;
+    }
+    return result;
+  }
+  
+  int connectToNeighbors(PVector p, float dist, boolean oneway, int numlanes) {
+    int i=0;
+    for (PVector q : getNeighbors(p, dist, 1.1)) {
+      float td = PVector.dist(q, p);
+      if(td < dist) {
+        Segment s = ((++i & 1) == 0) ? new Segment(p, q):new Segment(q, p);
+        addSegment(s, oneway, numlanes);
+      }
+    }
+    return i;
+  }
+  
 }

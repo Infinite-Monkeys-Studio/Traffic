@@ -57,3 +57,21 @@ float fixAngle(float a, float sign) {
 float clamp(float a, float b) {
   return a > b ? b : a < -b ? -b : a;
 }
+
+
+int growRoads(float len, boolean oneway, int numlanes) {
+  // THis is a wierd algorithm to organicly grow the network of roads. First walk in a random
+  // direction starting at the origin until we find an empty area. create a junction
+  // in that area. Then connect to any other nearby junctions.
+  PVector p = findEmptyArea(len * .9);
+  return world.connectToNeighbors(p, len * 1.5, oneway, numlanes);
+}
+
+PVector findEmptyArea(float r) {
+  PVector p = new PVector();
+  PVector s = PVector.random2D().mult(1.5*r);
+  while (world.hasNeighbors(p, r)) {
+    p.add(s);
+  }
+  return p;
+}

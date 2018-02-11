@@ -37,6 +37,7 @@ void draw() {
     }
   }
   world.draw(editMode);
+  if(!paused) world.step();
   popMatrix();
   drawHelp();  
 }
@@ -66,6 +67,9 @@ void keyTyped() {
       break;
     case 'u':
       new Road(world.nearestSegment(mv)).rebutBothEnds();
+      break;
+    case 'i':
+      growRoads(400, oneway, numlanes);
       break;
     case '[': world.driveSpeed(1/1.1); break;
     case ']': world.driveSpeed(1.1); break;
@@ -167,7 +171,6 @@ float wheelPos = 0;
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
   wheelPos += e < 0 ? -1 : e > 0 ? 1 : 0; //<>//
-  println(e);
 }
 
 void mouseZoom() {

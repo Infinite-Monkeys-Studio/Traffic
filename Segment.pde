@@ -42,6 +42,13 @@ class Segment {
     strokeCap(ROUND);
     stroke(100);
     line(start.x,start.y, end.x, end.y);
+
+    // for debug lane changes
+    //strokeWeight(4); stroke(255,0,0); 
+    //PVector e1=PVector.lerp(start,end,b1);
+    //PVector e2=PVector.lerp(start,end,b2);
+    //if (b1!=0) line(e1.x,e1.y,e2.x,e2.y);
+    //if (!paused) b1=0;
     
     drawSignal();
     
@@ -79,12 +86,6 @@ class Segment {
     drawChevron(start, end, 5);
   }  
   
-  void step() {
-    for(int i = 0; i < cars.size(); i++) {
-      Car c = cars.get(i);
-      c.step();
-    }
-  }
   
   float nearestAlpha(PVector point) { 
     // returns the alpha 0..1 that is nearest to the point (such as mouse x y)
@@ -141,7 +142,9 @@ class Segment {
     if (cars.size() == 0) return true;
     float a1 = alpha - distBack / length();
     float a2 = alpha + distForward / length();
+//    b1=0;
     for (Car c: cars) if (c.alpha > a1 && c.alpha < a2) return false;
+//    b1=a1;b2=a2; paused=true;
     return true;
   }
   

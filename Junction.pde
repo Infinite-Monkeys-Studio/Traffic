@@ -4,7 +4,11 @@ class Junction {
   PVector pos;
   float radius;
   boolean seen;   // temp flag to avoid infinite loops while walking the graph
-
+  int state;
+  int stateCounter;
+  // map the state + group into value 0..7, in which 1=can go right, 2=straight, 3=left
+  int [][] canGo;
+  
   Junction(PVector p, float r) {
     pos = p.copy(); 
     radius = r;
@@ -55,14 +59,71 @@ class Junction {
       ellipse(pos.x, pos.y, radius, radius);
     }
   }
+  
+  
+  void step() {
+    // change state every few seconds
+    if (stateCounter++ > 300) {
+      stateCounter = 0;
+      state = (state + 1) & 3;
+    }
+  }
 
+
+  boolean isYellow() { 
+    return stateCounter > 240; 
+  }
 
   ArrayList<Segment> openStarters(Segment ender, float dist) {
     ArrayList<Segment> temp = new ArrayList<Segment>();
+    int sig = getSignal(ender.group);
+    if (sig == 0)   // RED LIGHT
+      return temp;
+    PVector a = ender.axis();
     for (Segment s: starters) {
-      if (s.isClear(dist)) temp.add(s);
+      if (s.isClear(dist)) {
+        if (sig == 7) {
+          temp.add(s);
+        } 
+        else {
+          float t = turn(a, s.axis());
+          // dir is 1=right, 2=straight, 4=left
+          int dir = (Math.abs(t) < 0.1) ? 2 : t < 0 ? 4 : 1;
+          if ((dir & sig) == dir)
+            temp.add(s);
+        }
+      }
     }
     return temp;
+  }
+   
+  
+  
+  int getSignal(int group) {
+    // gets the value of the signal, 0=red light, 7=green light
+    if (canGo == null) 
+      return 7;
+    if (state < canGo.length && group < canGo[state].length) {
+      return canGo[state][group];
+    }
+    return 0;
+  }
+  
+  
+  void setupControl() {
+    canGo = new int[][] { // 1=right, 2=straight, 4=left, 7=any direction
+      { 3, 0, 3, 0 }, // group 0 and 2 can go right or straight
+      { 0, 4, 0, 4 }, // group 1 and 3 can turn left
+      { 0, 3, 0, 3 },
+      { 4, 0, 4, 0 }};
+    
+    for (Segment e: enders) {
+      PVector a = e.axis();
+      if (Math.abs(a.x) > Math.abs(a.y))
+        e.group = a.x > 0 ? 2 : 0; 
+      else
+        e.group = a.y > 0 ? 3 : 1;
+    }
   }
   
   ArrayList<Junction> neighbors() {

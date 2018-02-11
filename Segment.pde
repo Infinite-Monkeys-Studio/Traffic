@@ -6,6 +6,7 @@ class Segment {
   Segment rightside;  // these must be parallel segments in the same direction and distance
   Junction startjun;
   Junction endjun; 
+  int group;
   
   Segment(PVector start) {
     this(start, start.copy().add(0,.1));
@@ -42,6 +43,8 @@ class Segment {
     stroke(100);
     line(start.x,start.y, end.x, end.y);
     
+    drawSignal();
+    
     // Draw white lines on the sides of the road.
     strokeWeight(.5);
     strokeCap(SQUARE);
@@ -50,6 +53,15 @@ class Segment {
     if (leftside==null)  line(start.x-r.x,start.y-r.y,end.x-r.x,end.y-r.y);
     if (rightside!=null) stroke(180);
     line(start.x+r.x,start.y+r.y,end.x+r.x,end.y+r.y);
+  }
+  
+  void drawSignal() {
+    if (endjun.canGo == null) return;
+    int sig = endjun.getSignal(group);
+    if (sig == 0) fill(255,0,0);
+    else fill(0,255,0);
+    noStroke();
+    ellipse(end.x, end.y, 2, 2);
   }
   
   void drawEditMode() {

@@ -28,6 +28,13 @@ boolean isVectorNear(PVector v1, PVector v2, float dist) {
 }
 
 
+float turn(PVector a, PVector b) {
+  // radians to turn from a to b, negative for LEFT turn
+  float x = PVector.angleBetween(a,b);
+  float z = a.dot(-b.y, b.x, 0);
+  return z < 0 ? x : -x;
+}
+
 
 // Ensure a is between -pi and +pi, add multiples of 2*pi
 float fixAngle(float a) {

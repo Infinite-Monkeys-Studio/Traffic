@@ -65,10 +65,30 @@ class Segment {
   void drawSignal() {
     if (endjun.canGo == null) return;
     int sig = endjun.getSignal(group);
-    if (sig == 0) fill(255,0,0);
-    else fill(0,255,0);
-    noStroke();
-    ellipse(end.x, end.y, 2, 2);
+    int c = #00ff00;
+    if (sig == 0) c = #ff0000;
+    else if (endjun.isYellow()) c = #ffff00; 
+    PVector p = axis().normalize().mult(15).add(end);
+    if (sig == 7 || sig == 0) {
+      fill(c);
+      noStroke();
+      ellipse(p.x, p.y, 2, 2);
+    }
+    else {
+      stroke(c);
+      strokeWeight(1);
+      PVector e = PVector.sub(p,end).mult(.25);
+      PVector h = new PVector(-e.y, e.x);
+      if ((sig & 1)==1) {
+        drawChevronAt(p,h,2);  // right
+      }
+      if ((sig & 2) == 2) {
+        drawChevronAt(p.add(e),e,2);  // straight
+      }
+      if ((sig & 4) == 4) {
+        drawChevronAt(p.add(e),h.mult(-1),2);  // left
+      }
+    }
   }
   
   void drawEditMode() {

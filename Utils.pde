@@ -2,12 +2,15 @@ import java.util.Collections;
 
 
 void drawChevron(PVector start, PVector end, float size) {
+  drawChevronAt(PVector.add(end, start).div(2), PVector.sub(end, start), size);
+}
+
+void drawChevronAt(PVector at, PVector dir, float size) {
   pushMatrix();
-  PVector h = PVector.add(end, start).div(2);
-  translate(h.x, h.y); // goto middle of line to put cheveron
-  rotate(PVector.sub(end, start).heading());
-  line(0, 0, -2*size, size);
-  line(0, 0, -2*size, -size);
+  translate(at.x, at.y); // goto middle of line to put cheveron
+  rotate(dir.heading());
+  line(2*size, 0, 0, size);
+  line(2*size, 0, 0, -size);
   popMatrix();
 }
 

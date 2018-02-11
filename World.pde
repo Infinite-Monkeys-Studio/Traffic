@@ -153,8 +153,10 @@ class World {
   
   
   void step() {
-    for(Car c:carList) 
+    for(Car c : carList) 
       c.step();    
+    for(Junction j : junList) 
+      j.step();    
   }
 
   

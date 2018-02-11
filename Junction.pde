@@ -6,7 +6,7 @@ class Junction {
   boolean seen;   // temp flag to avoid infinite loops while walking the graph
   int state;
   int stateCounter;
-  // map the state + group into value 0..7, in which 1=can go right, 2=straight, 3=left
+  // map the state + group into value 0..7, in which 1=can go right, 2=straight, 4=left
   int [][] canGo;
   
   Junction(PVector p, float r) {

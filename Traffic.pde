@@ -65,6 +65,13 @@ void keyTyped() {
     case 't':
       world.removeSegment(world.nearestSegment(mv));
       break;
+    case 'c':
+      Junction j = world.nearestJunction(mv,100);
+      if (j != null) {
+        if (j.canGo == null) j.setupControl();
+        else j.canGo = null;
+      }
+      break;
     case 'u':
       new Road(world.nearestSegment(mv)).rebutBothEnds();
       break;
@@ -98,6 +105,7 @@ void drawHelp() {
     "g - add car at mouse location",
     "r - remove car",
     "t - remove road segment",
+    "c - add traffic signal",
     "u - rebut both ends of road",
     "45.. - load test scenario",
     "? - show help",
@@ -158,7 +166,7 @@ void mouseReleased() {
   if(editMode) {
     if(newSegment != null) { //make sure we are making a segment
       newSegment.end = mouseVector();
-      world.addSegment(newSegment, oneway, numlanes);
+      world.addSegment(newSegment, oneway, numlanes); //<>//
       Road r = new Road(newSegment);
       r.rebutBothEnds();
       newSegment = null;
@@ -232,7 +240,7 @@ void createTest4() {
   boolean w=false; int n=2;
   PVector a = new PVector(-200, -200);
   PVector b = new PVector(-200, 200);
-  PVector c = new PVector(200, 200);
+  PVector c = new PVector(200, 200); //<>//
   PVector d = new PVector(200, -200);
   world.addSegment(new Segment(a, b), w, n);
   world.addSegment(new Segment(b, c), w, n);

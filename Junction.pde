@@ -8,6 +8,7 @@ class Junction {
   int stateCounter;
   // map the state + group into value 0..7, in which 1=can go right, 2=straight, 4=left
   int [][] canGo;
+  String templateName;
   
   Junction(PVector p, float r) {
     pos = p.copy(); 
@@ -116,6 +117,14 @@ class Junction {
       { 0, 4, 0, 4 }, // group 1 and 3 can turn left
       { 0, 3, 0, 3 },
       { 4, 0, 4, 0 }};
+    if(templateName == null) {
+      //guess?
+    } else if(canGo != null) {
+      //warn about an overwrite?
+    } else {
+      //get template
+      
+    }
     
     for (Segment e: enders) {
       PVector a = e.axis();

@@ -14,6 +14,11 @@ void drawChevronAt(PVector at, PVector dir, float size) {
   popMatrix();
 }
 
+void loadExternalFiles() {
+  JunctionTemplateLoader temp = new JunctionTemplateLoader();
+  JSONArray templateArray = loadJSONArray(JunctionTemplateLoader.JUNCTION_TEMPLATE_FILENAME);
+  temp.loadTemplates(templateArray, this);
+}
 
 color rainbow(int n) {
   // returns 12 colors of the rainbow, 0=red, 4=green, 8=blue

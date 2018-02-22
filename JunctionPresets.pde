@@ -1,27 +1,25 @@
-final class JunctionTemplateLoader {
+static class JunctionTemplateLoader  {
   static final String JUNCTION_TEMPLATE_FILENAME = "junction_templates.json";
   
-  ArrayList<JunctionTemplate> templates;
+  static ArrayList<JunctionTemplate> templates;
+  static boolean loaded;
   
-  JunctionTemplateLoader(String filename) {
-    loadTemplates(filename);
+  JunctionTemplateLoader(JSONArray jsonArr, Traffic parent) {
+   this.loaded = false;
+   if(jsonArr != null) loadTemplates(jsonArr, parent);
   }
   
   JunctionTemplateLoader() {
-    this(JUNCTION_TEMPLATE_FILENAME);
+    this(null, null);
   }
   
-  void loadTemplates(String filename) {
+  void loadTemplates(JSONArray arr, Traffic parent) {
     templates = new ArrayList<JunctionTemplate>();
-    JSONArray arr = loadJSONArray(filename);
     for(int i = 0; i < arr.size(); i++) {
-      JunctionTemplate temp = new JunctionTemplate(arr.getJSONObject(i));
+      JunctionTemplate temp = parent.new JunctionTemplate(arr.getJSONObject(i));
       templates.add(temp);
     }
-  }
-  
-  void loadTemplates() {
-    loadTemplates(JUNCTION_TEMPLATE_FILENAME);
+    loaded = true;
   }
 }
 

@@ -112,27 +112,26 @@ class Junction {
   
   
   void setupControl() {
-    canGo = new int[][] { // 1=right, 2=straight, 4=left, 7=any direction
-      { 3, 0, 3, 0 }, // group 0 and 2 can go right or straight
-      { 0, 4, 0, 4 }, // group 1 and 3 can turn left
-      { 0, 3, 0, 3 },
-      { 4, 0, 4, 0 }};
-    if(templateName == null) {
-      //guess?
-    } else if(canGo != null) {
-      //warn about an overwrite?
-    } else {
-      //get template
-      
+    if(templateName == null) { //get a random name incase we don't have one
+      int size = JunctionTemplateLoader.templateNames.size();
+      templateName = JunctionTemplateLoader.templateNames.get((int)random(0, size-1));
     }
     
-    for (Segment e: enders) {
+    if(canGo != null) {
+      //warn about an overwrite?
+    }
+    
+    //get template
+    JunctionTemplate temp = JunctionTemplateLoader.templates.get(templateName);
+    this.canGo = temp.canGo;
+    
+    for (Segment e : enders) {
       PVector a = e.axis();
       if (Math.abs(a.x) > Math.abs(a.y))
         e.group = a.x > 0 ? 2 : 0; 
       else
         e.group = a.y > 0 ? 3 : 1;
-    }
+    }  
   }
   
   ArrayList<Junction> neighbors() {

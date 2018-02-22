@@ -167,7 +167,7 @@ void mouseReleased() {
   if(editMode) {
     if(newSegment != null) { //make sure we are making a segment
       newSegment.end = mouseVector();
-      world.addSegment(newSegment, oneway, numlanes); //<>// //<>// //<>//
+      world.addSegment(newSegment, oneway, numlanes); //<>// //<>// //<>// //<>//
       Road r = new Road(newSegment);
       r.rebutBothEnds();
       newSegment = null;
@@ -179,7 +179,7 @@ float wheelPos = 0;
 
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
-  wheelPos += e < 0 ? -1 : e > 0 ? 1 : 0; //<>// //<>// //<>//
+  wheelPos += e < 0 ? -1 : e > 0 ? 1 : 0; //<>// //<>// //<>// //<>//
 }
 
 void mouseZoom() {
@@ -241,7 +241,7 @@ void createTest4() {
   boolean w=false; int n=2;
   PVector a = new PVector(-200, -200);
   PVector b = new PVector(-200, 200);
-  PVector c = new PVector(200, 200); //<>// //<>// //<>//
+  PVector c = new PVector(200, 200); //<>// //<>// //<>// //<>//
   PVector d = new PVector(200, -200);
   world.addSegment(new Segment(a, b), w, n);
   world.addSegment(new Segment(b, c), w, n);
@@ -252,7 +252,7 @@ void createTest4() {
   //for(Junction j:world.globalJunctions) println(j.pos);
 }
 
-// corrects for screen pan and zoom //<>// //<>// //<>//
+// corrects for screen pan and zoom //<>// //<>// //<>// //<>//
 PVector mouseVector() {
   return PVector.sub(new PVector(mouseX - width/2, mouseY - height/2).mult(1 / viewZoom), viewPortVec);
 }

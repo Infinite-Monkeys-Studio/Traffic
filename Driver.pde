@@ -50,7 +50,7 @@ class Driver {
           changeLane(myCar.s.rightside);
         // TODO -- better to look at the cars ahead and pick the best one to follow, 
         // based on where I want to go, and which one is going my natural speed.
-      } //<>//
+      } //<>// //<>//
     } 
     else {
       // I am the lead car

@@ -77,7 +77,7 @@ class Junction {
 
   ArrayList<Segment> openStarters(Segment ender, float dist) {
     ArrayList<Segment> temp = new ArrayList<Segment>();
-    int sig = getSignal(ender.group);
+    int sig = getSignal(ender.group) & ender.dir;
     if (sig == 0)   // RED LIGHT
       return temp;
     PVector a = ender.axis();

@@ -7,6 +7,7 @@ class Segment {
   Junction startjun;
   Junction endjun; 
   int group;
+  int dir;   // 1=right, 2=straight, 4=left
   
   Segment(PVector start) {
     this(start, start.copy().add(0,.1));
@@ -16,6 +17,7 @@ class Segment {
     this.start = start.copy();
     this.end = end.copy();
     cars = new ArrayList<Car>();
+    dir = 7;
   }
 
   PVector rightDir() {  // return a direction to the RIGHT of cars on this segment
@@ -51,6 +53,7 @@ class Segment {
     //if (!paused) b1=0;
     
     drawSignal();
+    drawArrow();
     
     // Draw white lines on the sides of the road.
     strokeWeight(.5);
@@ -80,14 +83,41 @@ class Segment {
       PVector e = PVector.sub(p,end).mult(.25);
       PVector h = new PVector(-e.y, e.x);
       if ((sig & 1)==1) {
-        drawChevronAt(p,h,2);  // right
+        drawChevronAt(p,h,4,2);  // right
       }
       if ((sig & 2) == 2) {
-        drawChevronAt(p.add(e),e,2);  // straight
+        drawChevronAt(p.add(e),e,4,2);  // straight
       }
       if ((sig & 4) == 4) {
-        drawChevronAt(p.add(e),h.mult(-1),2);  // left
+        drawChevronAt(p.add(e),h.mult(-1),4,2);  // left
       }
+    }
+  }
+  
+  void drawArrow() {
+    if (dir > 6) return;
+    noFill();
+    stroke(#ffffff);
+    strokeWeight(1);
+    PVector p = axis().normalize().mult(-40).add(end);
+    PVector e = PVector.sub(p,end).mult(-.1);
+    PVector h = new PVector(-e.y, e.x);
+    float a = axis().heading();
+    if ((dir & 1) == 1) { // right turn
+      p.add(h);
+      arc(p.x,p.y,4,4,a-1.7,a);
+      drawChevronAt(p.copy().add(e),h,1,1.5);
+      p.sub(h);
+    }
+    if ((dir & 2) == 2) {
+      PVector t = e.copy().mult(2.5).add(p);
+      line(p.x,p.y,t.x,t.y);
+      drawChevronAt(t,e,1,1.5);
+    }
+    if ((dir & 4) == 4) {  // left turn 
+      p.sub(h);
+      arc(p.x,p.y,4,4,a,a+1.7);
+      drawChevronAt(p.copy().add(e),h.mult(-1),1,1.5);
     }
   }
   

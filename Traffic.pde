@@ -46,6 +46,7 @@ void draw() {
 void keyTyped() {
   char k = key;
   PVector mv = mouseVector();
+  Segment s = world.nearestSegment(mv);
   switch(k) {
     case 'p':
       paused = !paused;
@@ -56,13 +57,13 @@ void keyTyped() {
       paused = editMode;
       break;
     case 'g': // don't ease in
-      Segment s = world.nearestSegment(mv);
       if (s != null) world.createCar(s, s.nearestAlpha(mv));
       break;
     case 'f':  world.createCar(mv);   break;
     case 'r':  world.removeCar(world.nearestCar(mv));     break;
-    case 't':  world.removeSegment(world.nearestSegment(mv));    break;
-    case 'u': new Road(world.nearestSegment(mv)).rebutBothEnds();  break;
+    case 't':  world.removeSegment(s);    break;
+    case 'm':  s.dir += s.dir<7 ? 1 : -6;    break;
+    case 'u': new Road(s).rebutBothEnds();  break;
     case 'i': growRoads(400, oneway, numlanes); break;
     case 'c':
       Junction j = world.nearestJunction(mv,100);
@@ -102,6 +103,7 @@ void drawHelp() {
     "t - remove road segment",
     "c - add traffic signal",
     "u - rebut both ends of road",
+    "m - change segment turn restriction",
     "i - add random road",
     "jJ - change radius of junction",
     "45.. - load test scenario",

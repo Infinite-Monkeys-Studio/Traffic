@@ -56,7 +56,7 @@ class Car {
     popMatrix();
   }
   
-  void step() { //<>//
+  void step() {  //<>//
     rate = driver.step();
     tooClose = collisionDetection();
     if (!tooClose) {

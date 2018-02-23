@@ -2,15 +2,23 @@ import java.util.Collections;
 
 
 void drawChevron(PVector start, PVector end, float size) {
+  drawChevronAt(PVector.add(end, start).div(2), PVector.sub(end, start), size);
+}
+
+void drawChevronAt(PVector at, PVector dir, float size) {
   pushMatrix();
-  PVector h = PVector.add(end, start).div(2);
-  translate(h.x, h.y); // goto middle of line to put cheveron
-  rotate(PVector.sub(end, start).heading());
-  line(0, 0, -2*size, size);
-  line(0, 0, -2*size, -size);
+  translate(at.x, at.y); // goto middle of line to put cheveron
+  rotate(dir.heading());
+  line(2*size, 0, 0, size);
+  line(2*size, 0, 0, -size);
   popMatrix();
 }
 
+void loadExternalFiles() {
+  JunctionTemplateLoader temp = new JunctionTemplateLoader();
+  JSONArray templateArray = loadJSONArray(JunctionTemplateLoader.JUNCTION_TEMPLATE_FILENAME);
+  temp.loadTemplates(templateArray, this);
+}
 
 color rainbow(int n) {
   // returns 12 colors of the rainbow, 0=red, 4=green, 8=blue
@@ -27,6 +35,13 @@ boolean isVectorNear(PVector v1, PVector v2, float dist) {
   return v1.dist(v2) <= dist;
 }
 
+
+float turn(PVector a, PVector b) {
+  // radians to turn from a to b, negative for LEFT turn
+  float x = PVector.angleBetween(a,b);
+  float z = a.dot(-b.y, b.x, 0);
+  return z < 0 ? x : -x;
+}
 
 
 // Ensure a is between -pi and +pi, add multiples of 2*pi

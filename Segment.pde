@@ -6,7 +6,7 @@ class Segment {
   Segment rightside;  // these must be parallel segments in the same direction and distance
   Junction startjun;
   Junction endjun; 
-  //float b1,b2;   for debug lane changes
+  int group;
   
   Segment(PVector start) {
     this(start, start.copy().add(0,.1));
@@ -50,6 +50,8 @@ class Segment {
     //if (b1!=0) line(e1.x,e1.y,e2.x,e2.y);
     //if (!paused) b1=0;
     
+    drawSignal();
+    
     // Draw white lines on the sides of the road.
     strokeWeight(.5);
     strokeCap(SQUARE);
@@ -58,6 +60,35 @@ class Segment {
     if (leftside==null)  line(start.x-r.x,start.y-r.y,end.x-r.x,end.y-r.y);
     if (rightside!=null) stroke(180);
     line(start.x+r.x,start.y+r.y,end.x+r.x,end.y+r.y);
+  }
+  
+  void drawSignal() {
+    if (endjun.canGo == null) return;
+    int sig = endjun.getSignal(group);
+    int c = #00ff00;
+    if (sig == 0) c = #ff0000;
+    else if (endjun.isYellow()) c = #ffff00; 
+    PVector p = axis().normalize().mult(15).add(end);
+    if (sig == 7 || sig == 0) {
+      fill(c);
+      noStroke();
+      ellipse(p.x, p.y, 2, 2);
+    }
+    else {
+      stroke(c);
+      strokeWeight(1);
+      PVector e = PVector.sub(p,end).mult(.25);
+      PVector h = new PVector(-e.y, e.x);
+      if ((sig & 1)==1) {
+        drawChevronAt(p,h,2);  // right
+      }
+      if ((sig & 2) == 2) {
+        drawChevronAt(p.add(e),e,2);  // straight
+      }
+      if ((sig & 4) == 4) {
+        drawChevronAt(p.add(e),h.mult(-1),2);  // left
+      }
+    }
   }
   
   void drawEditMode() {

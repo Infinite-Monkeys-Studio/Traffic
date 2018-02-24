@@ -80,16 +80,16 @@ class Segment {
     else {
       stroke(c);
       strokeWeight(1);
-      PVector e = PVector.sub(p,end).mult(.25);
+      PVector e = PVector.sub(p,end).mult(.35);
       PVector h = new PVector(-e.y, e.x);
       if ((sig & 1)==1) {
-        drawChevronAt(p,h,4,2);  // right
+        drawChevronAt(p,h,2,1.3);  // right
       }
       if ((sig & 2) == 2) {
-        drawChevronAt(p.add(e),e,4,2);  // straight
+        drawChevronAt(p.add(e),e,2,1.3);  // straight
       }
       if ((sig & 4) == 4) {
-        drawChevronAt(p.add(e),h.mult(-1),4,2);  // left
+        drawChevronAt(p.add(e),h.mult(-1),2,1.3);  // left
       }
     }
   }
@@ -100,7 +100,7 @@ class Segment {
     stroke(#ffffff);
     strokeWeight(1);
     PVector p = axis().normalize().mult(-40).add(end);
-    PVector e = PVector.sub(p,end).mult(-.1);
+    PVector e = PVector.sub(p,end).mult(-.1*lanesize/11);
     PVector h = new PVector(-e.y, e.x);
     float a = axis().heading();
     if ((dir & 1) == 1) { // right turn

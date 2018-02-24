@@ -62,4 +62,17 @@ class Road {
     rebut(0);
     rebut(1);
   }  
+
+  void setTurnDir(int i) {
+    int n = list[i].size();
+    if (n < 2) return;
+    for (Segment s: list[i]) s.dir = 2;  // straight only
+    list[i].get(i==0?0:n-1).dir = 3;     // straight or right
+    if (n > 2) list[i].get(i==0?n-1:0).dir = 4;  // left only
+  }
+  
+  void setTurnRestrictions() {
+    setTurnDir(0);
+    setTurnDir(1);
+  }
 }

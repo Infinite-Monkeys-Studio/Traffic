@@ -89,6 +89,7 @@ class World {
     // Rebut the two ends of the road
     Road road = new Road(newSegment);
     road.rebutBothEnds();
+    road.setTurnRestrictions();
   }
   
   Junction addJunction(PVector v) {

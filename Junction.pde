@@ -1,4 +1,4 @@
-class Junction {
+class Junction implements Comparable {
   private ArrayList<Segment> enders;
   private ArrayList<Segment> starters;
   PVector pos;
@@ -9,6 +9,8 @@ class Junction {
   // map the state + group into value 0..7, in which 1=can go right, 2=straight, 4=left
   int [][] canGo;
   String templateName;
+  int templateId;
+  float sortkey;
   
   Junction(PVector p, float r) {
     pos = p.copy(); 
@@ -19,6 +21,10 @@ class Junction {
 
   Junction(PVector p) {
     this(p, 30);
+  }
+  
+  int compareTo(Object other) {
+    return (int) Math.signum(((Junction)other).sortkey - this.sortkey);
   }
   
   Segment addStarter(Segment s) {
@@ -112,10 +118,14 @@ class Junction {
   
   
   void setupControl() {
-    if(templateName == null) { //get a random name incase we don't have one
-      int size = JunctionTemplateLoader.templateNames.size();
-      templateName = JunctionTemplateLoader.templateNames.get((int)random(0, size-1));
+    if (templateId++ > JunctionTemplateLoader.templateNames.size()) {
+      templateId = 0;
+      canGo = null;
+      templateName = null;
+      return;
     }
+
+    templateName = JunctionTemplateLoader.templateNames.get(templateId);
     
     if(canGo != null) {
       //warn about an overwrite?
@@ -125,6 +135,9 @@ class Junction {
     JunctionTemplate temp = JunctionTemplateLoader.templates.get(templateName);
     this.canGo = temp.canGo;
     
+    // assign the group id to each incoming road
+    ArrayList<Junction> n = neighbors(1);
+    Collections.sort(n);
     for (Segment e : enders) {
       PVector a = e.axis();
       if (Math.abs(a.x) > Math.abs(a.y))
@@ -134,12 +147,20 @@ class Junction {
     }  
   }
   
-  ArrayList<Junction> neighbors() {
+  ArrayList<Junction> neighbors(int mask) {
     ArrayList<Junction> temp = new ArrayList<Junction>();
-    for (Segment s: starters) 
-      if (!temp.contains(s.endjun)) temp.add(s.endjun);
-    for (Segment e: enders) 
-      if (!temp.contains(e.startjun)) temp.add(e.startjun);
+    if ((mask & 1) == 1)
+      for (Segment e: enders) 
+        if (!temp.contains(e.startjun)) {
+          e.startjun.sortkey = e.axis().heading();
+          temp.add(e.startjun);
+        }
+    if ((mask & 2) == 2)
+      for (Segment s: starters) 
+        if (!temp.contains(s.endjun)) {
+          s.endjun.sortkey = s.axis().mult(-1).heading();
+          temp.add(s.endjun);
+        }
     return temp;
   }
   

@@ -67,10 +67,7 @@ void keyTyped() {
     case 'i': growRoads(400, oneway, numlanes); break;
     case 'c':
       Junction j = world.nearestJunction(mv,100);
-      if (j != null) {
-        if (j.canGo == null) j.setupControl();
-        else j.canGo = null;
-      }
+      if (j != null) j.setupControl();
       break;
     case '[': world.driveSpeed(1/1.1); break;
     case ']': world.driveSpeed(1.1); break;

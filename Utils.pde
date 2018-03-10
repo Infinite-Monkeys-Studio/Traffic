@@ -11,8 +11,6 @@ void drawChevronAt(PVector at, PVector dir, float size, float wide) {
   rotate(dir.heading());
   line(0,0,-size,wide);
   line(0,0,-size,-wide);
-  //line(2*size, 0, 0, size);
-  //line(2*size, 0, 0, -size);
   popMatrix();
 }
 

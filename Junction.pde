@@ -5,12 +5,14 @@ class Junction implements Comparable {
   float radius;
   boolean seen;   // temp flag to avoid infinite loops while walking the graph
   int state;
+  int numState;
   int stateCounter;
   // map the state + group into value 0..7, in which 1=can go right, 2=straight, 4=left
   int [][] canGo;
   String templateName;
   int templateId;
   float sortkey;
+  
   
   Junction(PVector p, float r) {
     pos = p.copy(); 
@@ -72,7 +74,7 @@ class Junction implements Comparable {
     // change state every few seconds
     if (stateCounter++ > 300) {
       stateCounter = 0;
-      state = (state + 1) & 3;
+      if (++state >= numState) state = 0;
     }
   }
 
@@ -110,22 +112,19 @@ class Junction implements Comparable {
     // gets the value of the signal, 0=red light, 7=green light
     if (canGo == null) 
       return 7;
-    if (state < canGo.length && group < canGo[state].length) {
-      return canGo[state][group];
-    }
-    return 0;
+    return canGo[state][group % canGo[state].length];
   }
   
   
   void setupControl() {
-    if (templateId++ > JunctionTemplateLoader.templateNames.size()) {
+    if (++templateId > JunctionTemplateLoader.templateNames.size()) {
       templateId = 0;
       canGo = null;
       templateName = null;
       return;
     }
 
-    templateName = JunctionTemplateLoader.templateNames.get(templateId);
+    templateName = JunctionTemplateLoader.templateNames.get(templateId - 1);
     
     if(canGo != null) {
       //warn about an overwrite?
@@ -139,12 +138,10 @@ class Junction implements Comparable {
     ArrayList<Junction> n = neighbors(1);
     Collections.sort(n);
     for (Segment e : enders) {
-      PVector a = e.axis();
-      if (Math.abs(a.x) > Math.abs(a.y))
-        e.group = a.x > 0 ? 2 : 0; 
-      else
-        e.group = a.y > 0 ? 3 : 1;
-    }  
+      e.group = n.indexOf(e.startjun);
+    }
+    numState = Math.min(n.size(), canGo.length);
+    state = 0;
   }
   
   ArrayList<Junction> neighbors(int mask) {

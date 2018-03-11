@@ -4,6 +4,7 @@ class World {
    ArrayList<Car> carList;
    ArrayList<Segment> segList;
    ArrayList<Junction> junList;
+   String filename;
 
   World() {
     segList = new ArrayList<Segment>();
@@ -88,7 +89,7 @@ class World {
     // Rebut the two ends of the road
     Road road = new Road(newSegment);
     road.rebutBothEnds();
-    road.setTurnRestrictions();
+    //road.setTurnRestrictions();
   }
   
   Junction addJunction(PVector v) {

@@ -12,11 +12,11 @@ class Junction implements Comparable {
   String templateName;
   int templateId;
   float sortkey;
-  
+  int id;
   
   Junction(PVector p, float r) {
     pos = p.copy(); 
-    radius = r;
+    radius = Math.max(10, r);
     enders = new ArrayList<Segment>();
     starters = new ArrayList<Segment>();
   }
@@ -153,6 +153,16 @@ class Junction implements Comparable {
           temp.add(s.endjun);
         }
     return temp;
+  }
+
+  // Count how many segments from this junction to the other junction
+  int countSegments(Junction other)
+  {
+    int count = 0;
+    for (Segment s: starters) {
+      if (s.endjun == other) ++count;
+    }
+    return count;
   }
   
   void rebut() {

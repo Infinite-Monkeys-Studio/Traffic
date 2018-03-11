@@ -43,7 +43,6 @@ class Road {
   
   // set a=0 or 1, to tell which end of the road to rebut
   void rebut(int a) {
-    if (list[a].size()==0) return;
     int n = list[a].size() + list[1-a].size();
     PVector p = startjun[a].pos.copy();
     PVector axis = PVector.sub(startjun[1-a].pos, p).normalize();

@@ -51,6 +51,8 @@ void keyTyped() {
     case 'p':
       paused = !paused;
       break;
+    case 'k': saveMap(); break;
+    case 'l': loadMap(); break;
     case 'e': //enter edit mode
       if(newSegment != null) break; // don't let them leave edit mode if they are making a new road.
       editMode = !editMode;

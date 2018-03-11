@@ -14,6 +14,10 @@ void drawChevronAt(PVector at, PVector dir, float size, float wide) {
   popMatrix();
 }
 
+String timestamp() {
+  return year() + "/" + month() + "/" + day() + " " + hour() + ":" + minute() + ":" + second();
+}
+
 void loadExternalFiles() {
   JunctionTemplateLoader temp = new JunctionTemplateLoader();
   JSONArray templateArray = loadJSONArray(JunctionTemplateLoader.JUNCTION_TEMPLATE_FILENAME);

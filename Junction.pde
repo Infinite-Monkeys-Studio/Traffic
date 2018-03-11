@@ -125,16 +125,10 @@ class Junction implements Comparable {
     }
 
     templateName = JunctionTemplateLoader.templateNames.get(templateId - 1);
-    
-    if(canGo != null) {
-      //warn about an overwrite?
-    }
-    
-    //get template
     JunctionTemplate temp = JunctionTemplateLoader.templates.get(templateName);
     this.canGo = temp.canGo;
     
-    // assign the group id to each incoming road
+    // assign the group id to each incoming road, sorted by heading
     ArrayList<Junction> n = neighbors(1);
     Collections.sort(n);
     for (Segment e : enders) {

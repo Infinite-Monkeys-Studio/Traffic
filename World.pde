@@ -1,16 +1,15 @@
 
 class World {
   
-  private ArrayList<Car> carList;
-  private ArrayList<Segment> segList;
-  private ArrayList<Junction> junList;
+   ArrayList<Car> carList;
+   ArrayList<Segment> segList;
+   ArrayList<Junction> junList;
 
   World() {
     segList = new ArrayList<Segment>();
     junList = new ArrayList<Junction>();
     carList = new ArrayList<Car>();
   }    
-    
     
   Car createCar(PVector v) {
     Segment s = nearestSegment(v);
